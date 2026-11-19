@@ -1,0 +1,37 @@
+[
+  {
+    "userId": "U001",
+    "name": "Juan Perez",
+    "type": "Estudiante"
+  },
+  {
+    "userId": "U002",
+    "name": "Maria Garcia",
+    "type": "Profesor"
+  },
+  {
+    "userId": "U003",
+    "name": "Carlos Murillo",
+    "type": "Externo"
+  },
+  {
+    "userId": "U004",
+    "name": "Camilo Gomez",
+    "type": "Estudiante"
+  },
+  {
+    "userId": "U005",
+    "name": "Ana Torres",
+    "type": "Estudiante"
+  },
+  {
+    "userId": "U006",
+    "name": "Tomas Espinel",
+    "type": "Estudiante"
+  },
+  {
+    "userId": "U008",
+    "name": "Felipe Bernate",
+    "type": "Externo"
+  }
+]

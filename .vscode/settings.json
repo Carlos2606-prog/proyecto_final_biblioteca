@@ -1,0 +1,13 @@
+{
+    "java.project.sourcePaths": [
+        "src"
+    ],
+    "java.project.outputPath": "bin",
+    "java.project.referencedLibraries": [
+        "c:\\Users\\muril\\OneDrive\\Documentos\\tmp\\Progra_3_Hoyos\\final - cliente_servidor\\server\\lib\\gson-2.8.2.jar",
+        "c:\\Users\\muril\\OneDrive\\Documentos\\tmp\\Progra_3_Hoyos\\final - cliente_servidor\\server\\lib\\jgoodies-looks-2.4.1.jar",
+        "c:\\Users\\muril\\OneDrive\\Documentos\\tmp\\Progra_3_Hoyos\\final - cliente_servidor\\server\\lib\\jgoodies-common-1.2.0.jar",
+        "c:\\Users\\muril\\OneDrive\\Documentos\\tmp\\Progra_3_Hoyos\\final - cliente_servidor\\server\\lib\\jcalendar-1.4.jar",
+        "c:\\Users\\muril\\OneDrive\\Documentos\\tmp\\Progra_3_Hoyos\\final - cliente_servidor\\server\\lib\\junit-4.6.jar"
+    ]
+}

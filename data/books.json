@@ -1,0 +1,149 @@
+[
+  {
+    "code": 1,
+    "title": "Cien Anos de Soledad",
+    "author": "Gabriel Garcia Marquez",
+    "genre": "Realismo Magico",
+    "year": 1967
+  },
+  {
+    "code": 2,
+    "title": "Don Quijote de la Mancha",
+    "author": "Miguel de Cervantes",
+    "genre": "Novela",
+    "year": 1605
+  },
+  {
+    "code": 3,
+    "title": "1984",
+    "author": "George Orwell",
+    "genre": "Distopia",
+    "year": 1949
+  },
+  {
+    "code": 4,
+    "title": "El Principito",
+    "author": "Antoine de Saint-Exupery",
+    "genre": "Fabula",
+    "year": 1943
+  },
+  {
+    "code": 5,
+    "title": "Orgullo y Prejuicio",
+    "author": "Jane Austen",
+    "genre": "Romance",
+    "year": 1813
+  },
+  {
+    "code": 6,
+    "title": "Crimen y Castigo",
+    "author": "Fiodor Dostoyevski",
+    "genre": "Ficcion",
+    "year": 1866
+  },
+  {
+    "code": 7,
+    "title": "El Senor de los Anillos",
+    "author": "J.R.R. Tolkien",
+    "genre": "Fantasia",
+    "year": 1954
+  },
+  {
+    "code": 8,
+    "title": "Harry Potter y la Piedra Filosofal",
+    "author": "J.K. Rowling",
+    "genre": "Fantasia",
+    "year": 1997
+  },
+  {
+    "code": 9,
+    "title": "Fahrenheit 451",
+    "author": "Ray Bradbury",
+    "genre": "Distopia",
+    "year": 1953
+  },
+  {
+    "code": 10,
+    "title": "Cumbres Borrascosas",
+    "author": "Emily Bronte",
+    "genre": "Drama",
+    "year": 1847
+  },
+  {
+    "code": 11,
+    "title": "El Nombre del Viento",
+    "author": "Patrick Rothfuss",
+    "genre": "Fantasia",
+    "year": 2007
+  },
+  {
+    "code": 12,
+    "title": "El Codigo Da Vinci",
+    "author": "Dan Brown",
+    "genre": "Suspenso",
+    "year": 2003
+  },
+  {
+    "code": 13,
+    "title": "El Alquimista",
+    "author": "Paulo Coelho",
+    "genre": "Ficcion",
+    "year": 1988
+  },
+  {
+    "code": 15,
+    "title": "La Odisea",
+    "author": "Homero",
+    "genre": "Epico",
+    "year": -700
+  },
+  {
+    "code": 16,
+    "title": "Dracula",
+    "author": "Bram Stoker",
+    "genre": "Terror",
+    "year": 1897
+  },
+  {
+    "code": 17,
+    "title": "It",
+    "author": "Stephen King",
+    "genre": "Terror",
+    "year": 1986
+  },
+  {
+    "code": 18,
+    "title": "El Retrato de Dorian Gray",
+    "author": "Oscar Wilde",
+    "genre": "Filosofico",
+    "year": 1890
+  },
+  {
+    "code": 19,
+    "title": "Rayuela",
+    "author": "Julio Cortazar",
+    "genre": "Novela",
+    "year": 1963
+  },
+  {
+    "code": 20,
+    "title": "Ensayo sobre la ceguera",
+    "author": "Jose Saramago",
+    "genre": "Ficcion",
+    "year": 1995
+  },
+  {
+    "code": 21,
+    "title": "La Sombra del Viento",
+    "author": "Carlos Ruiz Zafon",
+    "genre": "Misterio",
+    "year": 2001
+  },
+  {
+    "code": 23,
+    "title": "hola",
+    "author": "George Orwell",
+    "genre": "Distopia",
+    "year": 1949
+  }
+]

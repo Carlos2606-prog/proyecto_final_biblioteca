@@ -1,0 +1,42 @@
+[
+  {
+    "loanId": 2,
+    "userId": "U003",
+    "copyId": 86,
+    "loanDate": "2025-11-24",
+    "returnDate": "2025-11-24",
+    "status": "Devuelto"
+  },
+  {
+    "loanId": 3,
+    "userId": "U003",
+    "copyId": 7,
+    "loanDate": "2025-11-24",
+    "returnDate": "2025-11-25",
+    "status": "Devuelto"
+  },
+  {
+    "loanId": 4,
+    "userId": "U003",
+    "copyId": 10,
+    "loanDate": "2025-12-25",
+    "returnDate": "2025-12-30",
+    "status": "Activo"
+  },
+  {
+    "loanId": 5,
+    "userId": "U008",
+    "copyId": 2,
+    "loanDate": "2025-12-25",
+    "returnDate": "2025-12-29",
+    "status": "Activo"
+  },
+  {
+    "loanId": 6,
+    "userId": "U001",
+    "copyId": 121,
+    "loanDate": "2026-11-17",
+    "returnDate": "2026-11-26",
+    "status": "Activo"
+  }
+]
