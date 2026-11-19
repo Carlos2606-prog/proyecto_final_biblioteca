@@ -1,5 +1,8 @@
 package co.edu.uptc.controller;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 import co.edu.uptc.model.Book;
 import co.edu.uptc.model.Copy;
 import co.edu.uptc.model.LibraryManager;
@@ -25,6 +28,7 @@ import java.util.List;
  */
 public class ClientHandler implements Runnable, Observer {
     private Socket socket;
+    private final ExecutorService notifier = Executors.newSingleThreadExecutor();
     private LibraryManager libraryManager;
     private DataInputStream in;
     private DataOutputStream out;
@@ -54,6 +58,8 @@ public class ClientHandler implements Runnable, Observer {
             System.out.println("Cliente desconectado: " + socket.getInetAddress());
         } finally {
             libraryManager.detach(this);
+            libraryManager.detach(this);
+            notifier.shutdownNow();
             try {
                 if (socket != null)
                     socket.close();
@@ -66,11 +72,19 @@ public class ClientHandler implements Runnable, Observer {
     @Override
     public void update() {
         try {
-            if (out != null) {
-                writeMessage("NOTIFICATION;DATA_CHANGED");
-            }
-        } catch (IOException e) {
-            System.err.println("Error enviando notificación: " + e.getMessage());
+            // No se escribe en el socket dentro del bloqueo del modelo:
+            // un cliente lento no debe frenar a los demás.
+            notifier.submit(() -> {
+                try {
+                    if (out != null) {
+                        writeMessage("NOTIFICATION;DATA_CHANGED");
+                    }
+                } catch (IOException e) {
+                    System.err.println("Error enviando notificación: " + e.getMessage());
+                }
+            });
+        } catch (RejectedExecutionException e) {
+            // el cliente ya se desconectó
         }
     }
 

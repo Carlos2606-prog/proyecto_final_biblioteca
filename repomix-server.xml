@@ -67,6 +67,3347 @@ bin/
         pojo/
           Observer.class
           Subject.class
+        structures/
+          BinaryTree.class
+          DoubleList.class
+          DoubleNode.class
+          NarioNode.class
+          NarioTree.class
+          Node.class
+          SimpleList.class
+          SimpleList$1.class
+          SimpleList$2.class
+  App.class
+data/
+  books.json
+  copies.json
+  loans.json
+  users.json
+lib/
+  gson-2.8.2.jar
+  jcalendar-1.4.jar
+  jgoodies-common-1.2.0.jar
+  jgoodies-looks-2.4.1.jar
+  junit-4.6.jar
+src/
+  co/
+    edu/
+      uptc/
+        controller/
+          ClientHandler.java
+          Server.java
+        model/
+          Book.java
+          Copy.java
+          LibraryManager.java
+          Loan.java
+          User.java
+        persistence/
+          DataManager.java
+          LocalDateAdapter.java
+          Reader.java
+          Writer.java
+        pojo/
+          Observer.java
+          Subject.java
+        structures/
+          BinaryTree.java
+          DoubleList.java
+          DoubleNode.java
+          NarioNode.java
+          NarioTree.java
+          Node.java
+          SimpleList.java
+  App.java
+README.md
+repomix-server.xml
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="src/co/edu/uptc/structures/BinaryTree.java">
+package co.edu.uptc.structures;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
+public class BinaryTree<T> {
+
+    private DoubleNode<T> root;
+    private Comparator<T> comparator;
+
+    public BinaryTree(Comparator<T> comparator) {
+        this.comparator = comparator;
+    }
+
+    public boolean add(T value) {
+        if (root == null) {
+            root = new DoubleNode<>(value);
+            return true;
+        }
+        return add(value, root);
+    }
+
+    private boolean add(T value, DoubleNode<T> subRoot) {
+        int cmp = comparator.compare(value, subRoot.getValue());
+        if (cmp == 0) {
+            return false;
+        }
+        if (cmp < 0) {
+            if (subRoot.getLeft() == null) {
+                subRoot.setLeft(new DoubleNode<>(value));
+                return true;
+            }
+            return add(value, subRoot.getLeft());
+        }
+
+        if (subRoot.getRight() == null) {
+            subRoot.setRight(new DoubleNode<>(value));
+            return true;
+        }
+        return add(value, subRoot.getRight());
+    }
+
+    public boolean remove(T value) {
+        return remove(value, root);
+    }
+
+    private boolean remove(T value, DoubleNode<T> subRoot) {
+        if (subRoot == null) {
+            return false;
+        }
+        int cmp = comparator.compare(value, subRoot.getValue());
+        if (cmp == 0) {
+            System.out.println("Se elimino " + subRoot.getValue());
+            subRoot = null;
+            return true;
+        }
+
+        if (cmp < 0) {
+            return remove(value, subRoot.getLeft());
+        }
+
+        return remove(value, subRoot.getRight());
+    }
+
+    public T find(T value) {
+        return find(value, root).getValue();
+    }
+
+    private DoubleNode<T> find(T value, DoubleNode<T> subRoot) {
+        if (subRoot == null) {
+            return null;
+        }
+        int cmp = comparator.compare(value, subRoot.getValue());
+        if (cmp == 0) {
+            return subRoot;
+        }
+        if (cmp < 0) {
+            return find(value, subRoot.getLeft());
+        }
+        return find(value, subRoot.getRight());
+    }
+
+    private boolean contains(T value) {
+        boolean isIn = false;
+        return isIn;
+    }
+    /*
+     * public List<T> convertToList() {
+     * List<T> list = new ArrayList<T>();
+     * Node<T> aux = root;
+     * list.add(aux.getValue());
+     * while (aux != null) {
+     * if (aux.getLeft() != null) {
+     * list.add(aux.getLeft().getValue());
+     * }
+     * if (aux.getRight() != null) {
+     * list.add(aux.getRight().getValue());
+     * }
+     * aux = aux.getLeft();
+     * }
+     * aux = root.getRight();
+     * while (aux != null) {
+     * if (aux.getLeft() != null) {
+     * list.add(aux.getLeft().getValue());
+     * }
+     * if (aux.getRight() != null) {
+     * list.add(aux.getRight().getValue());
+     * }
+     * aux = aux.getRight();
+     * }
+     * return list;
+     * }
+     * 
+     */
+
+    private boolean isEmpty() {
+        if (root == null) {
+            return true;
+        }
+        return false;
+    }
+
+    public List<T> inOrder() {
+        List<T> inOrder = new ArrayList<>();
+        inOrder(inOrder, root);
+        return inOrder;
+    }
+
+    private void inOrder(List<T> list, DoubleNode<T> subRoot) {
+        if (subRoot == null) {
+            return;
+        }
+        inOrder(list, subRoot.getLeft());
+        list.add(subRoot.getValue());
+        inOrder(list, subRoot.getRight());
+    }
+
+}
+</file>
+
+<file path="src/co/edu/uptc/structures/DoubleList.java">
+package co.edu.uptc.structures;
+
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Deque;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Queue;
+
+public class DoubleList<E> implements List<E> {
+	private DoubleNode<E> head;
+
+	public DoubleList() {
+		this.head = null;
+	}
+
+	@Override
+	public int size() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public boolean isEmpty() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean contains(Object o) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Iterator<E> iterator() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object[] toArray() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T> T[] toArray(T[] a) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean add(E e) {
+		DoubleNode<E> newNode = new DoubleNode<E>(e);
+		if (head == null) {
+			head = newNode;
+		} else {
+			DoubleNode<E> aux = head;
+			while (aux.getRight() != null) {
+				aux = aux.getRight();
+			}
+			newNode.setLeft(aux);
+			aux.setRight(newNode);
+		}
+		return true;
+	}
+
+	@Override
+	public boolean remove(Object o) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean containsAll(Collection<?> c) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean addAll(Collection<? extends E> c) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean addAll(int index, Collection<? extends E> c) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean removeAll(Collection<?> c) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean retainAll(Collection<?> c) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void clear() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public E get(int index) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public E set(int index, E element) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void add(int index, E element) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public E remove(int index) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int indexOf(Object o) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int lastIndexOf(Object o) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public ListIterator<E> listIterator() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ListIterator<E> listIterator(int index) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<E> subList(int fromIndex, int toIndex) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String toString() {
+		return "DoubleList [head=" + head + "]";
+	}
+
+	public String toStringReverse() {
+		StringBuilder reverse = new StringBuilder();
+		if (head != null) {
+			DoubleNode<E> aux = head;
+			while (aux.getRight() != null) {
+				aux = aux.getRight();
+			}
+			while (aux != null) {
+				reverse.append(aux.getValue() + " -> ");
+				aux = aux.getLeft();
+			}
+		}
+		return "DoubleList [" + reverse + "]";
+	}
+}
+</file>
+
+<file path="src/co/edu/uptc/structures/DoubleNode.java">
+package co.edu.uptc.structures;
+
+public class DoubleNode<E> {
+	private E value;
+	private DoubleNode<E> left;
+	private DoubleNode<E> right;
+
+	public DoubleNode(E value) {
+		this.value = value;
+		this.left = null;
+		this.right = null;
+	}
+
+	public E getValue() {
+		return value;
+	}
+
+	public void setValue(E value) {
+		this.value = value;
+	}
+
+	public DoubleNode<E> getLeft() {
+		return left;
+	}
+
+	public void setLeft(DoubleNode<E> previous) {
+		this.left = previous;
+	}
+
+	public DoubleNode<E> getRight() {
+		return right;
+	}
+
+	public void setRight(DoubleNode<E> next) {
+		this.right = next;
+	}
+
+	@Override
+	public String toString() {
+		return "DoubleNode [value=" + value + ", next=" + right + "]";
+	}
+
+}
+</file>
+
+<file path="src/co/edu/uptc/structures/NarioNode.java">
+package co.edu.uptc.structures;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class NarioNode<T> {
+
+    private T data;
+    private List<NarioNode<T>> children;
+
+    public NarioNode(T data) {
+        this.data = data;
+        this.children = new ArrayList<>();
+    }
+
+    public boolean add(NarioNode<T> son) {
+        return this.children.add(son);
+    }
+
+    public T getData() {
+        return this.data;
+    }
+
+    public List<NarioNode<T>> getChildren() {
+        return this.children;
+    }
+}
+</file>
+
+<file path="src/co/edu/uptc/structures/NarioTree.java">
+package co.edu.uptc.structures;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+
+public class NarioTree<T> {
+    private NarioNode<T> root;
+    private Comparator<T> comparator;
+
+    public NarioTree(T valueRoot, Comparator<T> comparator) {
+        this.root = new NarioNode<>(valueRoot);
+        this.comparator = comparator;
+    }
+
+    public boolean add(T parent, T son) {
+        if (search(son) != null) {
+            return false;
+        }
+
+        NarioNode<T> parentNode = search(parent);
+        if (parentNode == null) {
+            return false;
+        }
+
+        return parentNode.add(new NarioNode<>(son));
+    }
+
+    public boolean remove(T parent, T son) {
+        NarioNode<T> parentNode = search(parent);
+        if (parentNode == null) {
+            return false;
+        }
+
+        List<NarioNode<T>> children = parentNode.getChildren();
+        for (int i = 0; i < children.size(); i++) {
+            if (comparator.compare(children.get(i).getData(), son) == 0) {
+                children.remove(i);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public NarioNode<T> search(T value) {
+        return search(root, value);
+    }
+
+    private NarioNode<T> search(NarioNode<T> current, T value) {
+        if (current == null) {
+            return null;
+        }
+
+        if (comparator.compare(current.getData(), value) == 0) {
+            return current;
+        }
+
+        for (NarioNode<T> child : current.getChildren()) {
+            NarioNode<T> result = search(child, value);
+            if (result != null) {
+                return result;
+            }
+        }
+
+        return null;
+    }
+
+    public Iterator<T> iterator() {
+        List<T> elements = new ArrayList<>();
+        preOrder(root, elements);
+        return elements.iterator();
+    }
+
+    private void preOrder(NarioNode<T> current, List<T> elements) {
+        if (current != null) {
+            elements.add(current.getData());
+            for (NarioNode<T> child : current.getChildren()) {
+                preOrder(child, elements);
+            }
+        }
+    }
+}
+</file>
+
+<file path="src/co/edu/uptc/structures/Node.java">
+package co.edu.uptc.structures;
+
+public class Node<E> {
+    private E value;
+    private Node<E> next;
+
+    public Node(E value) {
+        this.value = value;
+    }
+
+    public E getValue() {
+        return value;
+    }
+
+    public void setValue(E value) {
+        this.value = value;
+    }
+
+    public Node<E> getNext() {
+        return next;
+    }
+
+    public void setNext(Node<E> next) {
+        this.next = next;
+    }
+
+    @Override
+    public String toString() {
+        return "Node [value=" + value + ", next=" + next + "]";
+    }
+
+}
+</file>
+
+<file path="src/co/edu/uptc/structures/SimpleList.java">
+package co.edu.uptc.structures;
+
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.NoSuchElementException;
+import java.lang.reflect.Array;
+import java.util.Objects;
+
+public class SimpleList<E> implements Collection<E>, List<E> {
+	private Node<E> head;
+
+	public SimpleList() {
+		head = null;
+	}
+
+	@Override
+	public int size() {
+		Node<E> current = head;
+		int count = 0;
+		while (current != null) {
+			count += 1;
+			current = current.getNext();
+		}
+		return count;
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return head == null;
+	}
+
+	@Override
+	public boolean contains(Object o) {
+		Node<E> aux = head;
+		while (aux != null) {
+			if (o == null ? aux.getValue() == null : o.equals(aux.getValue())) {
+				return true;
+			}
+			aux = aux.getNext();
+		}
+		return false;
+	}
+
+	/**
+	 * Permite recorrer los elementos de la lista uno por uno.
+	 *
+	 * @return un iterador para recorrer la lista
+	 */
+	@Override
+	public Iterator<E> iterator() {
+		return new Iterator<E>() {
+
+			// Guarda el nodo que se está recorriendo actualmente.
+			// Al comenzar, apunta al primer nodo de la lista.
+			private Node<E> actual = head;
+
+			/**
+			 * Comprueba si todavía hay un elemento por recorrer.
+			 *
+			 * @return true si actual apunta a un nodo,
+			 *         false si ya se llegó al final de la lista
+			 */
+			@Override
+			public boolean hasNext() {
+				return actual != null;
+			}
+
+			/**
+			 * Obtiene el elemento del nodo actual y pasa al siguiente nodo.
+			 *
+			 * @return el valor del nodo actual
+			 * @throws NoSuchElementException si ya no quedan elementos
+			 */
+			@Override
+			public E next() {
+				if (actual == null) {
+					throw new NoSuchElementException();
+				}
+
+				// Guardamos el valor del nodo actual.
+				E value = actual.getValue();
+
+				// Pasamos al siguiente nodo de la lista.
+				actual = actual.getNext();
+
+				return value;
+			}
+		};
+	}
+
+	@Override
+	public Object[] toArray() {
+		int size = size();
+		Object[] array = new Object[ size ];
+		Node aux = head;
+		for (int i=0; i< size; i++){
+			array[i] = aux.getValue();
+			aux = aux.getNext();
+		}
+
+		return array;
+	}
+
+	@Override
+	public <T> T[] toArray(T[] a) {
+		int size = size(); 
+		if (a.length < size) {
+			a = (T[]) Array.newInstance(
+        	a.getClass().getComponentType(), size);
+		}
+
+		int i = 0;
+		for (Object element : this) { 
+			a[i++] = (T) element;
+		}
+
+		if (a.length > size) {
+			a[size] = null;
+		}
+		return a;
+	}
+
+	@Override
+	public boolean add(E e) {
+		Node<E> newNode = new Node<E>(e);
+		if (head == null) {
+			head = newNode;
+		} else {
+			Node<E> actual = head;
+			while (actual.getNext() != null) {
+				actual = actual.getNext();
+			}
+			actual.setNext(newNode);
+		}
+		return true;
+	}
+
+	@Override
+	public boolean remove(Object o) {
+		if (isEmpty()) return false;
+		if (o == null) throw new NullPointerException();
+		if (o.getClass() != head.getValue().getClass()) throw new ClassCastException();
+		
+		if (head.getValue().equals(o)) {
+			head = head.getNext();
+			return true;
+		}
+		
+		Node<E> prev = head;
+		Node<E> next = head.getNext();
+
+		while (next != null) {
+			if (next.getValue().equals(o)) {
+				prev.setNext(next.getNext());
+				return true;
+			}
+
+			next = next.getNext();
+			prev = prev.getNext();
+		}
+
+		return false;
+	}
+
+	@Override
+	public boolean containsAll(Collection<?> c) throws UnsupportedOperationException, ClassCastException, NullPointerException, IllegalArgumentException{
+		for (Object object : c) {
+			if(!contains(object)){
+				return false;
+			}
+		}
+		return true;
+	}
+
+	@Override
+	public boolean addAll(Collection<? extends E> c) {
+		boolean modified = false;
+		for (E element : c) {
+			if (add(element)) {
+				modified = true;
+			}
+		}
+		return modified;
+	}
+
+	@Override
+	public boolean addAll(int index, Collection<? extends E> c) {
+		boolean isAdded = false;
+
+        if (index >= 0 && index <= this.size()) { 
+            if (!c.isEmpty()) {
+                Node<E> predecessor = null;
+                Node<E> successor = this.head;
+                for (int i = 0; i < index; i++) {
+                    predecessor = successor;
+                    successor = successor.getNext();
+                }
+                Node<E> current = predecessor;
+                for (E element : c) {
+                    Node<E> newNode = new Node<>(element);
+                    if (current == null) {
+                        this.head = newNode;
+                    } else {
+                        current.setNext(newNode);
+                    }
+                    current = newNode; 
+                }
+                if (current != null) {
+                    current.setNext(successor);
+                }
+                isAdded = true;
+            }
+        }
+        return isAdded;
+	}
+
+	@Override
+	public boolean removeAll(Collection<?> c) {
+		boolean result = false;
+		Node<E> actualNode = this.head;
+		while (actualNode != null) {
+			Node<E> nextNode = actualNode.getNext();
+			Node<E> temporalNode = actualNode;
+			if (c.stream().filter(e -> e.equals(temporalNode.getValue())).findFirst().orElse(null) != null) {
+				this.remove(actualNode.getValue());
+				result = true;
+			}
+			actualNode = nextNode;
+		}
+		return result;
+	}
+
+	@Override
+	public boolean retainAll(Collection<?> c) {
+
+		boolean result = false;
+		Node<E> current = head;
+		Node<E> previous = null;
+
+		while (current != null) {
+
+			if (c.contains(current.getValue())) {
+
+				previous = current;
+				current = current.getNext();
+
+			} else {
+				result = true;
+			}
+			if (previous == null) {
+				head = current.getNext();
+			}else{ 
+				previous.setNext(current.getNext());
+			}
+
+			current =current.getNext();
+
+		}
+
+		return result;
+	}
+
+	@Override
+	public void clear() {
+		head = null;
+	}
+
+	@Override
+	public E get(int index) {
+		if (index < 0 || head == null) {
+			return null;
+		}
+
+		Node currentNode = head;
+		int currentIndex = 0;
+
+		while (currentNode != null) {
+			if (currentIndex == index) {
+				return (E) currentNode.getValue();
+			}
+			else {
+				currentIndex ++;
+				currentNode = currentNode.getNext();
+			}
+		}
+		
+		return null;
+	}
+
+	@Override
+	public E set(int index, E element) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void add(int index, E element) {
+		Node<E> newNode = new Node<>(element);
+
+		if (index == 0) {
+			newNode.setNext(head);
+			head = newNode;
+			return;
+		}
+		
+		Node<E> aux = head;
+		for (int i = 0; i < index - 1; i++) {
+			aux = aux.getNext();
+		}
+
+		newNode.setNext(aux.getNext());
+		aux.setNext(newNode);
+	}
+
+	@Override
+	public E remove(int index) {
+		int count=0;
+		Node<E> aux = head;
+
+		while (aux != null) {
+			count++;
+			aux = aux.getNext();
+		}
+
+		if (index < 0 || index >= count) {
+			throw new IndexOutOfBoundsException("El indice esta fuera del rango: " + index);
+		}
+
+		if (index == 0) {
+			E removed = head.getValue();
+			head = head.getNext();
+			return removed;
+		}
+
+		Node<E> previous = head;
+
+		for (int i = 0; i < index - 1; i++) {
+			previous = previous.getNext();
+		}
+
+		Node<E> current = previous.getNext();
+		E removed = current.getValue();
+		previous.setNext(current.getNext());
+		return removed;
+	}
+
+	@Override
+	public int indexOf(Object o) {
+		Node<E> aux = head;
+		int counter = 0;
+		while(aux != null){
+			if(aux.getValue().equals(o)){
+				return counter;
+			}
+			aux = aux.getNext();
+			counter++;
+		}
+		return -1;
+	}
+
+	@Override
+	public int lastIndexOf(Object o) {
+		Node<E> actual = head;	
+		int i = -1;
+		int j = 0;
+		while(actual != null){
+			if(actual.getValue().equals(o)){
+				i = j;
+			}
+			j++;
+			actual = actual.getNext();
+		}
+		return i;
+	}
+
+
+	@Override
+	public ListIterator<E> listIterator() {
+
+	    ListIterator<E> iterator = new ListIterator<E>() {
+
+	        Node<E> actual = head;
+
+	        @Override
+	        public boolean hasNext() {
+	            return actual != null;
+	        }
+
+	        @Override
+	        public E next() {
+	            E element = actual.getValue();
+	            actual = actual.getNext();
+	            return element;
+	        }
+
+	        @Override
+	        public boolean hasPrevious() {
+	            return false;
+	        }
+
+	        @Override
+	        public E previous() {
+	            return null;
+	        }
+
+	        @Override
+	        public int nextIndex() {
+	            return 0;
+	        }
+
+	        @Override
+	        public int previousIndex() {
+	            return -1;
+	        }
+
+	        @Override
+	        public void remove() {
+	        }
+
+	        @Override
+	        public void set(E e) {
+	        }
+
+	        @Override
+	        public void add(E e) {
+	        }
+	    };
+
+	    return iterator;
+	}
+
+
+
+	@Override
+	public ListIterator<E> listIterator(int index) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public List<E> subList(int fromIndex, int toIndex) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String toString() {
+		return "SimpleList [head=" + head + "]";
+	}
+
+}
+</file>
+
+<file path="data/books.json">
+[
+  {
+    "code": 1,
+    "title": "Cien Anos de Soledad",
+    "author": "Gabriel Garcia Marquez",
+    "genre": "Realismo Magico",
+    "year": 1967
+  },
+  {
+    "code": 2,
+    "title": "Don Quijote de la Mancha",
+    "author": "Miguel de Cervantes",
+    "genre": "Novela",
+    "year": 1605
+  },
+  {
+    "code": 3,
+    "title": "1984",
+    "author": "George Orwell",
+    "genre": "Distopia",
+    "year": 1949
+  },
+  {
+    "code": 4,
+    "title": "El Principito",
+    "author": "Antoine de Saint-Exupery",
+    "genre": "Fabula",
+    "year": 1943
+  },
+  {
+    "code": 5,
+    "title": "Orgullo y Prejuicio",
+    "author": "Jane Austen",
+    "genre": "Romance",
+    "year": 1813
+  },
+  {
+    "code": 6,
+    "title": "Crimen y Castigo",
+    "author": "Fiodor Dostoyevski",
+    "genre": "Ficcion",
+    "year": 1866
+  },
+  {
+    "code": 7,
+    "title": "El Senor de los Anillos",
+    "author": "J.R.R. Tolkien",
+    "genre": "Fantasia",
+    "year": 1954
+  },
+  {
+    "code": 8,
+    "title": "Harry Potter y la Piedra Filosofal",
+    "author": "J.K. Rowling",
+    "genre": "Fantasia",
+    "year": 1997
+  },
+  {
+    "code": 9,
+    "title": "Fahrenheit 451",
+    "author": "Ray Bradbury",
+    "genre": "Distopia",
+    "year": 1953
+  },
+  {
+    "code": 10,
+    "title": "Cumbres Borrascosas",
+    "author": "Emily Bronte",
+    "genre": "Drama",
+    "year": 1847
+  },
+  {
+    "code": 11,
+    "title": "El Nombre del Viento",
+    "author": "Patrick Rothfuss",
+    "genre": "Fantasia",
+    "year": 2007
+  },
+  {
+    "code": 12,
+    "title": "El Codigo Da Vinci",
+    "author": "Dan Brown",
+    "genre": "Suspenso",
+    "year": 2003
+  },
+  {
+    "code": 13,
+    "title": "El Alquimista",
+    "author": "Paulo Coelho",
+    "genre": "Ficcion",
+    "year": 1988
+  },
+  {
+    "code": 15,
+    "title": "La Odisea",
+    "author": "Homero",
+    "genre": "Epico",
+    "year": -700
+  },
+  {
+    "code": 16,
+    "title": "Dracula",
+    "author": "Bram Stoker",
+    "genre": "Terror",
+    "year": 1897
+  },
+  {
+    "code": 17,
+    "title": "It",
+    "author": "Stephen King",
+    "genre": "Terror",
+    "year": 1986
+  },
+  {
+    "code": 18,
+    "title": "El Retrato de Dorian Gray",
+    "author": "Oscar Wilde",
+    "genre": "Filosofico",
+    "year": 1890
+  },
+  {
+    "code": 19,
+    "title": "Rayuela",
+    "author": "Julio Cortazar",
+    "genre": "Novela",
+    "year": 1963
+  },
+  {
+    "code": 20,
+    "title": "Ensayo sobre la ceguera",
+    "author": "Jose Saramago",
+    "genre": "Ficcion",
+    "year": 1995
+  },
+  {
+    "code": 21,
+    "title": "La Sombra del Viento",
+    "author": "Carlos Ruiz Zafon",
+    "genre": "Misterio",
+    "year": 2001
+  },
+  {
+    "code": 23,
+    "title": "hola",
+    "author": "George Orwell",
+    "genre": "Distopia",
+    "year": 1949
+  }
+]
+</file>
+
+<file path="data/copies.json">
+[
+  {
+    "copyId": 1,
+    "bookCode": 1,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 2,
+    "bookCode": 1,
+    "status": "Prestado"
+  },
+  {
+    "copyId": 3,
+    "bookCode": 2,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 4,
+    "bookCode": 2,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 5,
+    "bookCode": 2,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 6,
+    "bookCode": 2,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 7,
+    "bookCode": 3,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 8,
+    "bookCode": 4,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 9,
+    "bookCode": 4,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 10,
+    "bookCode": 4,
+    "status": "Prestado"
+  },
+  {
+    "copyId": 11,
+    "bookCode": 4,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 12,
+    "bookCode": 4,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 13,
+    "bookCode": 5,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 14,
+    "bookCode": 5,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 15,
+    "bookCode": 5,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 16,
+    "bookCode": 5,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 17,
+    "bookCode": 5,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 18,
+    "bookCode": 5,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 19,
+    "bookCode": 5,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 20,
+    "bookCode": 5,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 21,
+    "bookCode": 5,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 22,
+    "bookCode": 5,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 23,
+    "bookCode": 6,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 24,
+    "bookCode": 6,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 25,
+    "bookCode": 6,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 26,
+    "bookCode": 7,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 27,
+    "bookCode": 7,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 28,
+    "bookCode": 7,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 29,
+    "bookCode": 7,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 30,
+    "bookCode": 7,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 31,
+    "bookCode": 7,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 32,
+    "bookCode": 8,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 33,
+    "bookCode": 8,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 34,
+    "bookCode": 8,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 35,
+    "bookCode": 8,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 36,
+    "bookCode": 8,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 37,
+    "bookCode": 8,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 38,
+    "bookCode": 8,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 39,
+    "bookCode": 8,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 40,
+    "bookCode": 8,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 41,
+    "bookCode": 8,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 42,
+    "bookCode": 8,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 43,
+    "bookCode": 8,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 44,
+    "bookCode": 8,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 45,
+    "bookCode": 8,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 46,
+    "bookCode": 9,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 47,
+    "bookCode": 9,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 48,
+    "bookCode": 10,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 49,
+    "bookCode": 10,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 50,
+    "bookCode": 10,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 51,
+    "bookCode": 10,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 52,
+    "bookCode": 10,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 53,
+    "bookCode": 11,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 54,
+    "bookCode": 11,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 55,
+    "bookCode": 11,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 56,
+    "bookCode": 11,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 57,
+    "bookCode": 11,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 58,
+    "bookCode": 11,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 59,
+    "bookCode": 11,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 60,
+    "bookCode": 11,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 61,
+    "bookCode": 11,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 62,
+    "bookCode": 11,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 63,
+    "bookCode": 11,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 64,
+    "bookCode": 11,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 65,
+    "bookCode": 13,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 66,
+    "bookCode": 13,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 72,
+    "bookCode": 15,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 73,
+    "bookCode": 15,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 74,
+    "bookCode": 15,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 75,
+    "bookCode": 15,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 76,
+    "bookCode": 15,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 77,
+    "bookCode": 15,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 78,
+    "bookCode": 15,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 79,
+    "bookCode": 15,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 80,
+    "bookCode": 15,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 81,
+    "bookCode": 15,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 82,
+    "bookCode": 16,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 83,
+    "bookCode": 16,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 84,
+    "bookCode": 16,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 85,
+    "bookCode": 16,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 86,
+    "bookCode": 17,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 87,
+    "bookCode": 17,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 88,
+    "bookCode": 17,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 89,
+    "bookCode": 17,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 90,
+    "bookCode": 17,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 91,
+    "bookCode": 17,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 92,
+    "bookCode": 17,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 93,
+    "bookCode": 17,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 94,
+    "bookCode": 17,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 95,
+    "bookCode": 17,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 96,
+    "bookCode": 17,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 97,
+    "bookCode": 17,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 98,
+    "bookCode": 17,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 99,
+    "bookCode": 17,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 100,
+    "bookCode": 18,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 101,
+    "bookCode": 18,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 102,
+    "bookCode": 18,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 103,
+    "bookCode": 19,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 104,
+    "bookCode": 19,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 105,
+    "bookCode": 19,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 106,
+    "bookCode": 19,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 107,
+    "bookCode": 20,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 108,
+    "bookCode": 20,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 109,
+    "bookCode": 20,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 110,
+    "bookCode": 20,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 111,
+    "bookCode": 20,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 112,
+    "bookCode": 20,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 113,
+    "bookCode": 20,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 114,
+    "bookCode": 21,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 121,
+    "bookCode": 23,
+    "status": "Prestado"
+  },
+  {
+    "copyId": 122,
+    "bookCode": 23,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 123,
+    "bookCode": 23,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 124,
+    "bookCode": 23,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 125,
+    "bookCode": 23,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 126,
+    "bookCode": 23,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 127,
+    "bookCode": 23,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 128,
+    "bookCode": 23,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 129,
+    "bookCode": 23,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 130,
+    "bookCode": 23,
+    "status": "Disponible"
+  }
+]
+</file>
+
+<file path="data/loans.json">
+[
+  {
+    "loanId": 2,
+    "userId": "U003",
+    "copyId": 86,
+    "loanDate": "2025-11-24",
+    "returnDate": "2025-11-24",
+    "status": "Devuelto"
+  },
+  {
+    "loanId": 3,
+    "userId": "U003",
+    "copyId": 7,
+    "loanDate": "2025-11-24",
+    "returnDate": "2025-11-25",
+    "status": "Devuelto"
+  },
+  {
+    "loanId": 4,
+    "userId": "U003",
+    "copyId": 10,
+    "loanDate": "2025-12-25",
+    "returnDate": "2025-12-30",
+    "status": "Activo"
+  },
+  {
+    "loanId": 5,
+    "userId": "U008",
+    "copyId": 2,
+    "loanDate": "2025-12-25",
+    "returnDate": "2025-12-29",
+    "status": "Activo"
+  },
+  {
+    "loanId": 6,
+    "userId": "U001",
+    "copyId": 121,
+    "loanDate": "2026-11-17",
+    "returnDate": "2026-11-26",
+    "status": "Activo"
+  }
+]
+</file>
+
+<file path="data/users.json">
+[
+  {
+    "userId": "U001",
+    "name": "Juan Perez",
+    "type": "Estudiante"
+  },
+  {
+    "userId": "U002",
+    "name": "Maria Garcia",
+    "type": "Profesor"
+  },
+  {
+    "userId": "U003",
+    "name": "Carlos Murillo",
+    "type": "Externo"
+  },
+  {
+    "userId": "U004",
+    "name": "Camilo Gomez",
+    "type": "Estudiante"
+  },
+  {
+    "userId": "U005",
+    "name": "Ana Torres",
+    "type": "Estudiante"
+  },
+  {
+    "userId": "U006",
+    "name": "Tomas Espinel",
+    "type": "Estudiante"
+  },
+  {
+    "userId": "U008",
+    "name": "Felipe Bernate",
+    "type": "Externo"
+  }
+]
+</file>
+
+<file path="src/co/edu/uptc/controller/ClientHandler.java">
+package co.edu.uptc.controller;
+
+import co.edu.uptc.model.Book;
+import co.edu.uptc.model.Copy;
+import co.edu.uptc.model.LibraryManager;
+import co.edu.uptc.model.Loan;
+import co.edu.uptc.model.User;
+import co.edu.uptc.pojo.Observer;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.util.List;
+
+/**
+ * Atiende a un cliente. Protocolo: cada mensaje se envia como
+ * [int longitud][bytes UTF-8]. Las respuestas empiezan por SUCCESS o ERROR;
+ * y las notificaciones asincronas por NOTIFICATION;
+ */
+public class ClientHandler implements Runnable, Observer {
+    private Socket socket;
+    private LibraryManager libraryManager;
+    private DataInputStream in;
+    private DataOutputStream out;
+
+    // Estado de la sesion
+    private boolean isAdmin;
+    private String sessionUserId;
+
+    public ClientHandler(Socket socket, LibraryManager libraryManager) {
+        this.socket = socket;
+        this.libraryManager = libraryManager;
+    }
+
+    @Override
+    public void run() {
+        try {
+            in = new DataInputStream(socket.getInputStream());
+            out = new DataOutputStream(socket.getOutputStream());
+
+            libraryManager.attach(this);
+
+            while (true) {
+                String request = readMessage();
+                writeMessage(processRequest(request));
+            }
+        } catch (IOException e) {
+            System.out.println("Cliente desconectado: " + socket.getInetAddress());
+        } finally {
+            libraryManager.detach(this);
+            try {
+                if (socket != null)
+                    socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void update() {
+        try {
+            if (out != null) {
+                writeMessage("NOTIFICATION;DATA_CHANGED");
+            }
+        } catch (IOException e) {
+            System.err.println("Error enviando notificación: " + e.getMessage());
+        }
+    }
+
+    // ==========================================
+    // ENTRADA / SALIDA (sin el limite de 64 KB de writeUTF)
+    // ==========================================
+
+    private String readMessage() throws IOException {
+        int length = in.readInt();
+        byte[] data = new byte[length];
+        in.readFully(data);
+        return new String(data, StandardCharsets.UTF_8);
+    }
+
+    private void writeMessage(String message) throws IOException {
+        byte[] data = message.getBytes(StandardCharsets.UTF_8);
+        synchronized (out) {
+            out.writeInt(data.length);
+            out.write(data);
+            out.flush();
+        }
+    }
+
+    // ==========================================
+    // PROCESAMIENTO DE SOLICITUDES
+    // ==========================================
+
+    private String processRequest(String request) {
+        // -1 para conservar campos vacios (ej. "SEARCH_BOOKS;Titulo;")
+        String[] p = request.split(";", -1);
+        try {
+            // Un solo hilo a la vez sobre el modelo
+            synchronized (libraryManager) {
+                return execute(p[0], p);
+            }
+        } catch (NumberFormatException e) {
+            return "ERROR;Se esperaba un valor numérico válido";
+        } catch (Exception e) {
+            String msg = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
+            return "ERROR;" + msg;
+        }
+    }
+
+    private void need(String[] p, int n) {
+        if (p.length < n) {
+            throw new IllegalArgumentException("Faltan parámetros en la solicitud");
+        }
+    }
+
+    private String execute(String command, String[] p) {
+        // ---- Login / logout ----
+        switch (command) {
+            case "LOGIN_ADMIN":
+                need(p, 3);
+                if ("admin".equals(p[1]) && "123".equals(p[2])) {
+                    isAdmin = true;
+                    sessionUserId = null;
+                    return "SUCCESS";
+                }
+                return "ERROR;Credenciales incorrectas";
+
+            case "LOGIN_USER": {
+                need(p, 3);
+                User user = libraryManager.findUserById(p[1].trim());
+                if (user != null && user.getName().equalsIgnoreCase(p[2].trim())) {
+                    isAdmin = false;
+                    sessionUserId = user.getUserId();
+                    return "SUCCESS";
+                }
+                return "ERROR;Usuario no encontrado o datos incorrectos";
+            }
+
+            case "LOGOUT":
+                isAdmin = false;
+                sessionUserId = null;
+                return "SUCCESS";
+            default:
+                break;
+        }
+
+        if (!isAdmin && sessionUserId == null) {
+            return "ERROR;Debe iniciar sesión";
+        }
+
+        // ---- Comandos para admin y usuario ----
+        switch (command) {
+            case "GET_BOOKS":
+                return "SUCCESS;" + booksToJson(libraryManager.getAllBooks());
+
+            case "SEARCH_BOOKS":
+                need(p, 3);
+                return "SUCCESS;" + booksToJson(libraryManager.searchBooks(p[1], p[2]));
+
+            case "GET_AVAILABLE_COPIES": {
+                need(p, 2);
+                Book book = libraryManager.findBookByCode(Integer.parseInt(p[1].trim()));
+                if (book == null) {
+                    return "ERROR;Libro no encontrado";
+                }
+                JsonArray array = new JsonArray();
+                for (Copy copy : book.getCopies()) {
+                    if ("Disponible".equals(copy.getStatus())) {
+                        array.add(copy.getCopyId());
+                    }
+                }
+                return "SUCCESS;" + array.toString();
+            }
+
+            case "GET_MY_LOANS":
+                return "SUCCESS;" + loansToJson(libraryManager.getLoansByUser(requireSessionUser().getUserId()));
+
+            case "GET_MY_DETAILS": {
+                User user = requireSessionUser();
+                JsonObject o = new JsonObject();
+                o.addProperty("userId", user.getUserId());
+                o.addProperty("name", user.getName());
+                o.addProperty("type", user.getType());
+                o.addProperty("activeLoans", libraryManager.getActiveLoansByUser(user.getUserId()).size());
+                return "SUCCESS;" + o.toString();
+            }
+            default:
+                break;
+        }
+
+        // ---- Comandos solo para administrador ----
+        if (!isAdmin) {
+            return "ERROR;Operación permitida solo para administradores";
+        }
+
+        switch (command) {
+            case "GET_USERS":
+                return "SUCCESS;" + usersToJson(libraryManager.getAllUsers());
+
+            case "ADD_USER":
+                need(p, 4);
+                libraryManager.addUser(p[1].trim(), p[2].trim(), p[3].trim());
+                return "SUCCESS;Usuario agregado correctamente";
+
+            case "EDIT_USER":
+                need(p, 4);
+                libraryManager.editUser(p[1].trim(), p[2].trim(), p[3].trim());
+                return "SUCCESS;Usuario actualizado correctamente";
+
+            case "DELETE_USER":
+                need(p, 2);
+                libraryManager.removeUser(p[1].trim());
+                return "SUCCESS;Usuario eliminado correctamente";
+
+            case "ADD_BOOK":
+                // ADD_BOOK;code;title;author;genre;year;numCopies
+                need(p, 7);
+                libraryManager.addBook(Integer.parseInt(p[1].trim()), p[2].trim(), p[3].trim(), p[4].trim(),
+                        Integer.parseInt(p[5].trim()), Integer.parseInt(p[6].trim()));
+                return "SUCCESS;Libro agregado correctamente";
+
+            case "EDIT_BOOK":
+                need(p, 7);
+                libraryManager.editBook(Integer.parseInt(p[1].trim()), p[2].trim(), p[3].trim(), p[4].trim(),
+                        Integer.parseInt(p[5].trim()), Integer.parseInt(p[6].trim()));
+                return "SUCCESS;Libro actualizado correctamente";
+
+            case "DELETE_BOOK":
+                need(p, 2);
+                libraryManager.removeBook(Integer.parseInt(p[1].trim()));
+                return "SUCCESS;Libro eliminado correctamente";
+
+            case "GET_LOANS":
+                return "SUCCESS;" + loansToJson(libraryManager.getAllLoans());
+
+            case "REGISTER_LOAN": {
+                need(p, 4);
+                LocalDate returnDate;
+                try {
+                    returnDate = LocalDate.parse(p[3].trim());
+                } catch (DateTimeParseException e) {
+                    return "ERROR;Fecha inválida";
+                }
+                libraryManager.registerLoan(p[1].trim(), Integer.parseInt(p[2].trim()), returnDate);
+                return "SUCCESS;Préstamo registrado correctamente";
+            }
+
+            case "REGISTER_RETURN":
+                need(p, 2);
+                libraryManager.registerReturn(Integer.parseInt(p[1].trim()));
+                return "SUCCESS;Devolución registrada correctamente";
+
+            case "GET_STATISTICS": {
+                JsonArray stats = new JsonArray();
+                stats.add(libraryManager.getTotalUsers());
+                stats.add(libraryManager.getTotalBooks());
+                stats.add(libraryManager.getActiveLoansCount());
+                stats.add(libraryManager.getOverdueLoansCount());
+                stats.add(libraryManager.getAvailableCopies());
+                stats.add(libraryManager.getTotalCopies());
+                return "SUCCESS;" + stats.toString();
+            }
+
+            default:
+                return "ERROR;Comando no reconocido";
+        }
+    }
+
+    private User requireSessionUser() {
+        User user = sessionUserId == null ? null : libraryManager.findUserById(sessionUserId);
+        if (user == null) {
+            throw new IllegalStateException("Esta operación requiere un usuario con sesión iniciada");
+        }
+        return user;
+    }
+
+    // ==========================================
+    // CONVERSION A JSON (incluye datos calculados que Gson no serializa solo)
+    // ==========================================
+
+    private String booksToJson(List<Book> books) {
+        JsonArray array = new JsonArray();
+        for (Book b : books) {
+            JsonObject o = new JsonObject();
+            o.addProperty("code", b.getCode());
+            o.addProperty("title", b.getTitle());
+            o.addProperty("author", b.getAuthor());
+            o.addProperty("genre", b.getGenre());
+            o.addProperty("year", b.getYear());
+            o.addProperty("totalCopies", b.getTotalCopies());
+            o.addProperty("availableCopies", b.getAvailableCopies());
+            array.add(o);
+        }
+        return array.toString();
+    }
+
+    private String usersToJson(List<User> users) {
+        JsonArray array = new JsonArray();
+        for (User u : users) {
+            JsonObject o = new JsonObject();
+            o.addProperty("userId", u.getUserId());
+            o.addProperty("name", u.getName());
+            o.addProperty("type", u.getType());
+            o.addProperty("activeLoans", libraryManager.getActiveLoansByUser(u.getUserId()).size());
+            array.add(o);
+        }
+        return array.toString();
+    }
+
+    private String loansToJson(List<Loan> loans) {
+        JsonArray array = new JsonArray();
+        for (Loan l : loans) {
+            JsonObject o = new JsonObject();
+            o.addProperty("loanId", l.getLoanId());
+            o.addProperty("userId", l.getUser().getUserId());
+            o.addProperty("userName", l.getUser().getName());
+            o.addProperty("bookTitle", l.getCopy().getBook().getTitle());
+            o.addProperty("copyId", l.getCopy().getCopyId());
+            o.addProperty("loanDate", l.getLoanDate() == null ? "" : l.getLoanDate().toString());
+            o.addProperty("returnDate", l.getReturnDate() == null ? "" : l.getReturnDate().toString());
+            o.addProperty("status", l.getStatus());
+            array.add(o);
+        }
+        return array.toString();
+    }
+}
+</file>
+
+<file path="src/co/edu/uptc/controller/Server.java">
+package co.edu.uptc.controller;
+
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+import co.edu.uptc.model.LibraryManager;
+
+public class Server {
+    private int port;
+    private LibraryManager libraryManager;
+    private boolean isRunning;
+
+    public Server(int port) {
+        this.port = port;
+        this.libraryManager = new LibraryManager();
+    }
+
+    public void start() {
+        isRunning = true;
+        try (ServerSocket serverSocket = new ServerSocket(port)) {
+            System.out.println("Servidor iniciado en el puerto " + port);
+
+            while (isRunning) {
+                Socket clientSocket = serverSocket.accept();
+                System.out.println("Nuevo cliente conectado: " + clientSocket.getInetAddress());
+
+                // Cada cliente se maneja en un hilo independiente
+                ClientHandler handler = new ClientHandler(clientSocket, libraryManager);
+                new Thread(handler).start();
+            }
+        } catch (IOException e) {
+            System.err.println("Error en el servidor: " + e.getMessage());
+        }
+    }
+}
+</file>
+
+<file path="src/co/edu/uptc/model/Book.java">
+package co.edu.uptc.model;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Book {
+    private int code;
+    private String title;
+    private String author;
+    private String genre;
+    private int year;
+    private transient List<Copy> copies;
+
+    public Book(int code, String title, String author, String genre, int year) {
+        this.code = code;
+        this.title = title;
+        this.author = author;
+        this.genre = genre;
+        this.year = year;
+        this.copies = new ArrayList<>();
+    }
+
+    public int getCode() {
+        return code;
+    }
+
+    public void setCode(int code) {
+        this.code = code;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public String getGenre() {
+        return genre;
+    }
+
+    public void setGenre(String genre) {
+        this.genre = genre;
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    public void setYear(int year) {
+        this.year = year;
+    }
+
+    public List<Copy> getCopies() {
+        if (copies == null) {
+            copies = new ArrayList<>();
+        }
+        return copies;
+    }
+
+    public void addCopy(Copy copy) {
+        if (copies == null) {
+            copies = new ArrayList<>();
+        }
+        copies.add(copy);
+    }
+
+    public int getTotalCopies() {
+        if (copies == null) {
+            return 0;
+        }
+        return copies.size();
+    }
+
+    public int getAvailableCopies() {
+        if (copies == null) {
+            return 0;
+        }
+        int count = 0;
+        for (Copy copy : copies) {
+            if ("Disponible".equals(copy.getStatus())) {
+                count++;
+            }
+        }
+        return count;
+    }
+}
+</file>
+
+<file path="src/co/edu/uptc/model/Copy.java">
+package co.edu.uptc.model;
+
+public class Copy {
+    private int copyId;
+    private String status;
+    private transient Book book;
+
+    public Copy(int copyId, String status, Book book) {
+        this.copyId = copyId;
+        this.status = status;
+        this.book = book;
+    }
+
+    public int getCopyId() {
+        return copyId;
+    }
+
+    public void setCopyId(int copyId) {
+        this.copyId = copyId;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public Book getBook() {
+        return book;
+    }
+
+    public void setBook(Book book) {
+        this.book = book;
+    }
+}
+</file>
+
+<file path="src/co/edu/uptc/model/LibraryManager.java">
+package co.edu.uptc.model;
+
+import co.edu.uptc.persistence.DataManager;
+import co.edu.uptc.persistence.DataManager.CopyData;
+import co.edu.uptc.persistence.DataManager.LoanData;
+import co.edu.uptc.pojo.Subject;
+
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Logica de la biblioteca. Los metodos lanzan excepciones con un mensaje claro
+ * cuando una operacion no es valida; ClientHandler las convierte en "ERROR;mensaje".
+ * El acceso concurrente se sincroniza en ClientHandler (synchronized sobre este objeto).
+ */
+public class LibraryManager extends Subject {
+
+    private List<User> users;
+    private List<Book> books;
+    private List<Loan> loans;
+    private int nextLoanId;
+    private int nextCopyId;
+    private DataManager dataManager;
+
+    public LibraryManager() {
+        this.users = new ArrayList<>();
+        this.books = new ArrayList<>();
+        this.loans = new ArrayList<>();
+        this.nextLoanId = 1;
+        this.nextCopyId = 1;
+        this.dataManager = new DataManager();
+
+        try {
+            loadAllData();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadAllData() throws IOException {
+        users = dataManager.loadUsers();
+        books = dataManager.loadBooks();
+
+        List<CopyData> copiesData = dataManager.loadCopies();
+        for (CopyData copyData : copiesData) {
+            Book book = findBookByCode(copyData.getBookCode());
+            if (book != null) {
+                Copy copy = new Copy(copyData.getCopyId(), copyData.getStatus(), book);
+                book.addCopy(copy);
+
+                if (copyData.getCopyId() >= nextCopyId) {
+                    nextCopyId = copyData.getCopyId() + 1;
+                }
+            }
+        }
+
+        List<LoanData> loansData = dataManager.loadLoans();
+        for (LoanData loanData : loansData) {
+            User user = findUserById(loanData.getUserId());
+            Copy copy = findCopyById(loanData.getCopyId());
+
+            if (user != null && copy != null) {
+                Loan loan = new Loan(loanData.getLoanId(), user, copy,
+                        loanData.getLoanDate(), loanData.getReturnDate());
+                loan.setStatus(loanData.getStatus());
+                loans.add(loan);
+
+                if (loanData.getLoanId() >= nextLoanId) {
+                    nextLoanId = loanData.getLoanId() + 1;
+                }
+            }
+        }
+
+        reconcileCopyStatus();
+    }
+
+    /**
+     * El estado de una copia debe coincidir con los prestamos: "Prestado" solo si
+     * tiene un prestamo activo. (En los datos originales las copias 1 y 5 estaban
+     * "Prestado" sin ningun prestamo activo.)
+     */
+    private void reconcileCopyStatus() {
+        for (Book book : books) {
+            for (Copy copy : book.getCopies()) {
+                copy.setStatus("Disponible");
+            }
+        }
+        for (Loan loan : loans) {
+            if ("Activo".equals(loan.getStatus())) {
+                loan.getCopy().setStatus("Prestado");
+            }
+        }
+        saveAllData();
+    }
+
+    public void saveAllData() {
+        try {
+            dataManager.saveUsers(users);
+            dataManager.saveBooks(books);
+
+            List<CopyData> copiesData = new ArrayList<>();
+            for (Book book : books) {
+                for (Copy copy : book.getCopies()) {
+                    copiesData.add(new CopyData(copy.getCopyId(),
+                            book.getCode(),
+                            copy.getStatus()));
+                }
+            }
+            dataManager.saveCopies(copiesData);
+
+            List<LoanData> loansData = new ArrayList<>();
+            for (Loan loan : loans) {
+                loansData.add(new LoanData(loan.getLoanId(),
+                        loan.getUser().getUserId(),
+                        loan.getCopy().getCopyId(),
+                        loan.getLoanDate(),
+                        loan.getReturnDate(),
+                        loan.getStatus()));
+            }
+            dataManager.saveLoans(loansData);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private boolean isBlank(String s) {
+        return s == null || s.trim().isEmpty();
+    }
+
+    // ==========================================
+    // USUARIOS
+    // ==========================================
+
+    public User addUser(String userId, String name, String type) {
+        if (isBlank(userId) || isBlank(name)) {
+            throw new IllegalArgumentException("El ID y el nombre del usuario son obligatorios");
+        }
+        if (findUserById(userId) != null) {
+            throw new IllegalArgumentException("Ya existe un usuario con el ID " + userId);
+        }
+        User user = new User(userId, name, type);
+        users.add(user);
+        saveAllData();
+        notifyObservers();
+        return user;
+    }
+
+    public void editUser(String userId, String name, String type) {
+        User user = findUserById(userId);
+        if (user == null) {
+            throw new IllegalArgumentException("Usuario no encontrado");
+        }
+        if (isBlank(name)) {
+            throw new IllegalArgumentException("El nombre del usuario es obligatorio");
+        }
+        user.setName(name);
+        user.setType(type);
+        saveAllData();
+        notifyObservers();
+    }
+
+    public void removeUser(String userId) {
+        User user = findUserById(userId);
+        if (user == null) {
+            throw new IllegalArgumentException("Usuario no encontrado");
+        }
+        if (!getActiveLoansByUser(userId).isEmpty()) {
+            throw new IllegalStateException("No se puede eliminar: el usuario tiene préstamos activos");
+        }
+        // Evita prestamos "huerfanos" (se perderian al recargar los JSON)
+        loans.removeIf(loan -> loan.getUser().getUserId().equals(userId));
+        users.remove(user);
+        saveAllData();
+        notifyObservers();
+    }
+
+    // ==========================================
+    // LIBROS
+    // ==========================================
+
+    public Book addBook(int code, String title, String author, String genre, int year, int numCopies) {
+        if (isBlank(title)) {
+            throw new IllegalArgumentException("El título del libro es obligatorio");
+        }
+        if (numCopies < 0) {
+            throw new IllegalArgumentException("El número de copias no puede ser negativo");
+        }
+        if (findBookByCode(code) != null) {
+            throw new IllegalArgumentException("Ya existe un libro con el código " + code);
+        }
+        Book book = new Book(code, title, author, genre, year);
+        for (int i = 0; i < numCopies; i++) {
+            book.addCopy(new Copy(nextCopyId++, "Disponible", book));
+        }
+        books.add(book);
+        saveAllData();
+        notifyObservers();
+        return book;
+    }
+
+    public void editBook(int code, String title, String author, String genre, int year, int newCopiesCount) {
+        Book book = findBookByCode(code);
+        if (book == null) {
+            throw new IllegalArgumentException("Libro no encontrado");
+        }
+        if (isBlank(title)) {
+            throw new IllegalArgumentException("El título del libro es obligatorio");
+        }
+        if (newCopiesCount < 0) {
+            throw new IllegalArgumentException("El número de copias no puede ser negativo");
+        }
+
+        int currentCopies = book.getTotalCopies();
+        if (newCopiesCount < currentCopies) {
+            int toRemove = currentCopies - newCopiesCount;
+            if (book.getAvailableCopies() < toRemove) {
+                throw new IllegalStateException("No se pueden quitar " + toRemove
+                        + " copias: solo hay " + book.getAvailableCopies() + " disponibles (el resto está prestado)");
+            }
+            List<Copy> copies = book.getCopies();
+            for (int i = copies.size() - 1; i >= 0 && toRemove > 0; i--) {
+                Copy copy = copies.get(i);
+                if ("Disponible".equals(copy.getStatus())) {
+                    removeLoansOfCopy(copy);
+                    copies.remove(i);
+                    toRemove--;
+                }
+            }
+        } else if (newCopiesCount > currentCopies) {
+            for (int i = 0; i < newCopiesCount - currentCopies; i++) {
+                book.addCopy(new Copy(nextCopyId++, "Disponible", book));
+            }
+        }
+
+        book.setTitle(title);
+        book.setAuthor(author);
+        book.setGenre(genre);
+        book.setYear(year);
+        saveAllData();
+        notifyObservers();
+    }
+
+    public void removeBook(int code) {
+        Book book = findBookByCode(code);
+        if (book == null) {
+            throw new IllegalArgumentException("Libro no encontrado");
+        }
+        for (Copy copy : book.getCopies()) {
+            if (!"Disponible".equals(copy.getStatus())) {
+                throw new IllegalStateException("No se puede eliminar: el libro tiene copias prestadas");
+            }
+        }
+        for (Copy copy : book.getCopies()) {
+            removeLoansOfCopy(copy);
+        }
+        books.remove(book);
+        saveAllData();
+        notifyObservers();
+    }
+
+    private void removeLoansOfCopy(Copy copy) {
+        loans.removeIf(loan -> loan.getCopy() == copy);
+    }
+
+    // ==========================================
+    // PRESTAMOS
+    // ==========================================
+
+    public Loan registerLoan(String userId, int copyId, LocalDate returnDate) {
+        User user = findUserById(userId);
+        if (user == null) {
+            throw new IllegalArgumentException("Usuario no encontrado");
+        }
+        Copy copy = findCopyById(copyId);
+        if (copy == null) {
+            throw new IllegalArgumentException("Copia no encontrada");
+        }
+        if (!"Disponible".equals(copy.getStatus())) {
+            throw new IllegalStateException("La copia seleccionada no está disponible");
+        }
+        if (returnDate == null || returnDate.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("La fecha de devolución no puede ser anterior a hoy");
+        }
+
+        Loan loan = new Loan(nextLoanId++, user, copy, LocalDate.now(), returnDate);
+        copy.setStatus("Prestado");
+        loans.add(loan);
+        saveAllData();
+        notifyObservers();
+        return loan;
+    }
+
+    public void registerReturn(int loanId) {
+        Loan loan = findLoanById(loanId);
+        if (loan == null) {
+            throw new IllegalArgumentException("Préstamo no encontrado");
+        }
+        if (!"Activo".equals(loan.getStatus())) {
+            throw new IllegalStateException("Este préstamo ya fue devuelto");
+        }
+        loan.setStatus("Devuelto");
+        loan.getCopy().setStatus("Disponible");
+        saveAllData();
+        notifyObservers();
+    }
+
+    // ==========================================
+    // BUSQUEDAS
+    // ==========================================
+
+    public User findUserById(String userId) {
+        for (User aux : users) {
+            if (aux.getUserId().equals(userId)) {
+                return aux;
+            }
+        }
+        return null;
+    }
+
+    public Book findBookByCode(int code) {
+        for (Book aux : books) {
+            if (aux.getCode() == code) {
+                return aux;
+            }
+        }
+        return null;
+    }
+
+    private Copy findCopyById(int copyId) {
+        for (Book book : books) {
+            for (Copy aux : book.getCopies()) {
+                if (aux.getCopyId() == copyId) {
+                    return aux;
+                }
+            }
+        }
+        return null;
+    }
+
+    private Loan findLoanById(int loanId) {
+        for (Loan aux : loans) {
+            if (aux.getLoanId() == loanId) {
+                return aux;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * criterion: "Titulo", "Autor", "Genero" o "Codigo". Se compara solo la
+     * primera letra para no depender de tildes/codificacion. Texto vacio = todos.
+     */
+    public List<Book> searchBooks(String criterion, String text) {
+        String t = text == null ? "" : text.trim().toLowerCase();
+        char c = (criterion == null || criterion.isEmpty()) ? 't' : Character.toLowerCase(criterion.charAt(0));
+        List<Book> results = new ArrayList<>();
+        for (Book book : books) {
+            boolean match;
+            if (t.isEmpty()) {
+                match = true;
+            } else if (c == 'a') {
+                match = book.getAuthor() != null && book.getAuthor().toLowerCase().contains(t);
+            } else if (c == 'g') {
+                match = book.getGenre() != null && book.getGenre().toLowerCase().contains(t);
+            } else if (c == 'c') {
+                match = String.valueOf(book.getCode()).contains(t);
+            } else {
+                match = book.getTitle() != null && book.getTitle().toLowerCase().contains(t);
+            }
+            if (match) {
+                results.add(book);
+            }
+        }
+        return results;
+    }
+
+    public List<Loan> getLoansByUser(String userId) {
+        List<Loan> results = new ArrayList<>();
+        for (Loan loan : loans) {
+            if (loan.getUser().getUserId().equals(userId)) {
+                results.add(loan);
+            }
+        }
+        return results;
+    }
+
+    public List<Loan> getActiveLoansByUser(String userId) {
+        List<Loan> results = new ArrayList<>();
+        for (Loan loan : loans) {
+            if (loan.getUser().getUserId().equals(userId) && "Activo".equals(loan.getStatus())) {
+                results.add(loan);
+            }
+        }
+        return results;
+    }
+
+    // ==========================================
+    // ESTADISTICAS
+    // ==========================================
+
+    public int getActiveLoansCount() {
+        int count = 0;
+        for (Loan loan : loans) {
+            if ("Activo".equals(loan.getStatus())) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public int getOverdueLoansCount() {
+        LocalDate today = LocalDate.now();
+        int count = 0;
+        for (Loan loan : loans) {
+            if ("Activo".equals(loan.getStatus()) &&
+                    loan.getReturnDate() != null &&
+                    loan.getReturnDate().isBefore(today)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public int getTotalCopies() {
+        int count = 0;
+        for (Book book : books) {
+            count += book.getTotalCopies();
+        }
+        return count;
+    }
+
+    public int getAvailableCopies() {
+        int count = 0;
+        for (Book book : books) {
+            count += book.getAvailableCopies();
+        }
+        return count;
+    }
+
+    public int getTotalUsers() {
+        return users.size();
+    }
+
+    public int getTotalBooks() {
+        return books.size();
+    }
+
+    public List<User> getAllUsers() {
+        return new ArrayList<>(users);
+    }
+
+    public List<Book> getAllBooks() {
+        return new ArrayList<>(books);
+    }
+
+    public List<Loan> getAllLoans() {
+        return new ArrayList<>(loans);
+    }
+}
+</file>
+
+<file path="src/co/edu/uptc/model/Loan.java">
+package co.edu.uptc.model;
+
+import java.time.LocalDate;
+
+public class Loan {
+    private int loanId;
+    private User user;
+    private Copy copy;
+    private LocalDate loanDate;
+    private LocalDate returnDate;
+    private String status;
+
+    public Loan(int loanId, User user, Copy copy, LocalDate loanDate, LocalDate returnDate) {
+        this.loanId = loanId;
+        this.user = user;
+        this.copy = copy;
+        this.loanDate = loanDate;
+        this.returnDate = returnDate;
+        this.status = "Activo";
+    }
+
+    public int getLoanId() {
+        return loanId;
+    }
+
+    public void setLoanId(int loanId) {
+        this.loanId = loanId;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Copy getCopy() {
+        return copy;
+    }
+
+    public void setCopy(Copy copy) {
+        this.copy = copy;
+    }
+
+    public LocalDate getLoanDate() {
+        return loanDate;
+    }
+
+    public void setLoanDate(LocalDate loanDate) {
+        this.loanDate = loanDate;
+    }
+
+    public LocalDate getReturnDate() {
+        return returnDate;
+    }
+
+    public void setReturnDate(LocalDate returnDate) {
+        this.returnDate = returnDate;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+}
+</file>
+
+<file path="src/co/edu/uptc/model/User.java">
+package co.edu.uptc.model;
+
+public class User {
+    private String userId;
+    private String name;
+    private String type; 
+
+    public User(String userId, String name, String type) {
+        this.userId = userId;
+        this.name = name;
+        this.type = type;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+}
+</file>
+
+<file path="src/co/edu/uptc/persistence/DataManager.java">
+package co.edu.uptc.persistence;
+
+import com.google.gson.reflect.TypeToken;
+import co.edu.uptc.model.*;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.time.LocalDate;
+import java.util.List;
+
+public class DataManager {
+    private static final String USERS_PATH = "data/users.json";
+    private static final String BOOKS_PATH = "data/books.json";
+    private static final String COPIES_PATH = "data/copies.json";
+    private static final String LOANS_PATH = "data/loans.json";
+    private Reader reader;
+    private Writer writer;
+
+    public DataManager() {
+        this.reader = new Reader();
+        this.writer = new Writer();
+    }
+
+
+    public List<User> loadUsers() throws IOException {
+        Type type = new TypeToken<List<User>>() {
+        }.getType();
+        return reader.readList(USERS_PATH, type);
+    }
+
+    public void saveUsers(List<User> users) throws IOException {
+        writer.writeList(USERS_PATH, users);
+    }
+
+    public List<Book> loadBooks() throws IOException {
+        Type type = new TypeToken<List<Book>>() {
+        }.getType();
+        return reader.readList(BOOKS_PATH, type);
+    }
+
+    public void saveBooks(List<Book> books) throws IOException {
+        writer.writeList(BOOKS_PATH, books);
+    }
+
+    public List<CopyData> loadCopies() throws IOException {
+        Type type = new TypeToken<List<CopyData>>() {
+        }.getType();
+        return reader.readList(COPIES_PATH, type);
+    }
+
+    public void saveCopies(List<CopyData> copies) throws IOException {
+        writer.writeList(COPIES_PATH, copies);
+    }
+
+    public List<LoanData> loadLoans() throws IOException {
+        Type type = new TypeToken<List<LoanData>>() {
+        }.getType();
+        return reader.readList(LOANS_PATH, type);
+    }
+
+    public void saveLoans(List<LoanData> loans) throws IOException {
+        writer.writeList(LOANS_PATH, loans);
+    }
+
+    public static class CopyData {
+        private int copyId;
+        private int bookCode;
+        private String status;
+
+        public CopyData(int copyId, int bookCode, String status) {
+            this.copyId = copyId;
+            this.bookCode = bookCode;
+            this.status = status;
+        }
+
+        public int getCopyId() {
+            return copyId;
+        }
+
+        public int getBookCode() {
+            return bookCode;
+        }
+
+        public String getStatus() {
+            return status;
+        }
+    }
+
+    public static class LoanData {
+        private int loanId;
+        private String userId;
+        private int copyId;
+        private LocalDate loanDate;
+        private LocalDate returnDate;
+        private String status;
+
+        public LoanData(int loanId, String userId, int copyId, LocalDate loanDate,
+                LocalDate returnDate, String status) {
+            this.loanId = loanId;
+            this.userId = userId;
+            this.copyId = copyId;
+            this.loanDate = loanDate;
+            this.returnDate = returnDate;
+            this.status = status;
+        }
+
+        public int getLoanId() {
+            return loanId;
+        }
+
+        public String getUserId() {
+            return userId;
+        }
+
+        public int getCopyId() {
+            return copyId;
+        }
+
+        public LocalDate getLoanDate() {
+            return loanDate;
+        }
+
+        public LocalDate getReturnDate() {
+            return returnDate;
+        }
+
+        public String getStatus() {
+            return status;
+        }
+    }
+}
+</file>
+
+<file path="src/co/edu/uptc/persistence/LocalDateAdapter.java">
+package co.edu.uptc.persistence;
+
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
+public class LocalDateAdapter extends TypeAdapter<LocalDate> {
+    
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
+    
+    @Override
+    public void write(JsonWriter out, LocalDate value) throws IOException {
+        if (value == null) {
+            out.nullValue();
+        } else {
+            out.value(value.format(formatter));
+        }
+    }
+    
+    @Override
+    public LocalDate read(JsonReader in) throws IOException {
+        String date = in.nextString();
+        return LocalDate.parse(date, formatter);
+    }
+}
+</file>
+
+<file path="src/co/edu/uptc/persistence/Reader.java">
+package co.edu.uptc.persistence;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Reader {
+    private Gson gson;
+    
+    public Reader() {
+        this.gson = new GsonBuilder()
+            .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+            .setPrettyPrinting()
+            .create();
+    }
+    
+    public <T> List<T> readList(String path, Type type) throws IOException {
+        File file = new File(path);
+        
+        if (!file.exists()) {
+            file.getParentFile().mkdirs();
+            return new ArrayList<>();
+        }
+        
+        try (FileReader reader = new FileReader(file)) {
+            List<T> result = gson.fromJson(reader, type);
+            return result != null ? result : new ArrayList<>();
+        }
+    }
+}
+</file>
+
+<file path="src/co/edu/uptc/persistence/Writer.java">
+package co.edu.uptc.persistence;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.List;
+
+public class Writer {
+    private Gson gson;
+    
+    public Writer() {
+        this.gson = new GsonBuilder()
+            .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+            .setPrettyPrinting()
+            .create();
+    }
+    
+    public <T> void writeList(String path, List<T> data) throws IOException {
+        File file = new File(path);
+        file.getParentFile().mkdirs();
+        
+        try (FileWriter writer = new FileWriter(file)) {
+            gson.toJson(data, writer);
+        }
+    }
+}
+</file>
+
+<file path="src/co/edu/uptc/pojo/Observer.java">
+package co.edu.uptc.pojo;
+
+public interface Observer {
+    void update();
+}
+</file>
+
+<file path="src/co/edu/uptc/pojo/Subject.java">
+package co.edu.uptc.pojo;
+
+import java.util.concurrent.CopyOnWriteArrayList;
+
+public class Subject {
+    private CopyOnWriteArrayList<Observer> observers = new CopyOnWriteArrayList<>();
+
+    public void attach(Observer observer) {
+        observers.addIfAbsent(observer);
+    }
+
+    public void detach(Observer observer) {
+        observers.remove(observer);
+    }
+
+    public void notifyObservers() {
+        for (Observer observer : observers) {
+            observer.update();
+        }
+    }
+}
+</file>
+
+<file path="src/App.java">
+import co.edu.uptc.controller.Server;
+
+public class App {
+    public static void main(String[] args) {
+        int puerto = 1234; // Asegúrate de usar este mismo puerto en el ServerClient
+        Server server = new Server(puerto);
+        server.start();
+    }
+}
+</file>
+
+<file path="README.md">
+## Getting Started
+
+Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+
+## Folder Structure
+
+The workspace contains two folders by default, where:
+
+- `src`: the folder to maintain sources
+- `lib`: the folder to maintain dependencies
+
+Meanwhile, the compiled output files will be generated in the `bin` folder by default.
+
+> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
+
+## Dependency Management
+
+The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+</file>
+
+<file path="repomix-server.xml">
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+bin/
+  co/
+    edu/
+      uptc/
+        controller/
+          ClientHandler.class
+          Server.class
+        model/
+          Book.class
+          Copy.class
+          LibraryManager.class
+          Loan.class
+          User.class
+        persistence/
+          DataManager.class
+          DataManager$1.class
+          DataManager$2.class
+          DataManager$3.class
+          DataManager$4.class
+          DataManager$CopyData.class
+          DataManager$LoanData.class
+          LocalDateAdapter.class
+          Reader.class
+          Writer.class
+        pojo/
+          Observer.class
+          Subject.class
   App.class
 data/
   books.json
@@ -2092,6 +5433,9 @@ Meanwhile, the compiled output files will be generated in the `bin` folder by de
 ## Dependency Management
 
 The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+</file>
+
+</files>
 </file>
 
 </files>

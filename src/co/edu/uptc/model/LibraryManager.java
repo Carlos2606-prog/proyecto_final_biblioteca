@@ -4,30 +4,33 @@ import co.edu.uptc.persistence.DataManager;
 import co.edu.uptc.persistence.DataManager.CopyData;
 import co.edu.uptc.persistence.DataManager.LoanData;
 import co.edu.uptc.pojo.Subject;
+import co.edu.uptc.structures.BinaryTree;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
- * Logica de la biblioteca. Los metodos lanzan excepciones con un mensaje claro
- * cuando una operacion no es valida; ClientHandler las convierte en "ERROR;mensaje".
- * El acceso concurrente se sincroniza en ClientHandler (synchronized sobre este objeto).
+ * Lógica de la biblioteca sobre árboles binarios de búsqueda.
+ * Los árboles no son thread-safe, por eso todos los métodos públicos son
+ * synchronized (mismo monitor que usa ClientHandler). Las listas solo se usan
+ * para persistencia y para entregar resultados (snapshots).
  */
 public class LibraryManager extends Subject {
 
-    private List<User> users;
-    private List<Book> books;
-    private List<Loan> loans;
+    private final BinaryTree<User> users = new BinaryTree<>(Comparator.comparing(User::getUserId));
+    private final BinaryTree<Book> books = new BinaryTree<>(Comparator.comparingInt(Book::getCode));
+    private final BinaryTree<Loan> loans = new BinaryTree<>(Comparator.comparingInt(Loan::getLoanId));
+    /** Índice global de todas las copias por copyId (evita recorrer libro por libro). */
+    private final BinaryTree<Copy> copiesIndex = new BinaryTree<>(Comparator.comparingInt(Copy::getCopyId));
+
     private int nextLoanId;
     private int nextCopyId;
-    private DataManager dataManager;
+    private final DataManager dataManager;
 
     public LibraryManager() {
-        this.users = new ArrayList<>();
-        this.books = new ArrayList<>();
-        this.loans = new ArrayList<>();
         this.nextLoanId = 1;
         this.nextCopyId = 1;
         this.dataManager = new DataManager();
@@ -40,24 +43,24 @@ public class LibraryManager extends Subject {
     }
 
     private void loadAllData() throws IOException {
-        users = dataManager.loadUsers();
-        books = dataManager.loadBooks();
+        for (User user : dataManager.loadUsers()) {
+            users.add(user);
+        }
+        for (Book book : dataManager.loadBooks()) {
+            books.add(book);
+        }
 
-        List<CopyData> copiesData = dataManager.loadCopies();
-        for (CopyData copyData : copiesData) {
+        for (CopyData copyData : dataManager.loadCopies()) {
             Book book = findBookByCode(copyData.getBookCode());
             if (book != null) {
-                Copy copy = new Copy(copyData.getCopyId(), copyData.getStatus(), book);
-                book.addCopy(copy);
-
+                attachCopy(book, new Copy(copyData.getCopyId(), copyData.getStatus(), book));
                 if (copyData.getCopyId() >= nextCopyId) {
                     nextCopyId = copyData.getCopyId() + 1;
                 }
             }
         }
 
-        List<LoanData> loansData = dataManager.loadLoans();
-        for (LoanData loanData : loansData) {
+        for (LoanData loanData : dataManager.loadLoans()) {
             User user = findUserById(loanData.getUserId());
             Copy copy = findCopyById(loanData.getCopyId());
 
@@ -76,18 +79,27 @@ public class LibraryManager extends Subject {
         reconcileCopyStatus();
     }
 
+    /** Agrega la copia al libro Y al índice global (siempre juntos). */
+    private void attachCopy(Book book, Copy copy) {
+        book.addCopy(copy);
+        copiesIndex.add(copy);
+    }
+
+    /** Quita la copia del libro Y del índice global, junto con sus préstamos. */
+    private void detachCopy(Book book, Copy copy) {
+        removeLoansOfCopy(copy);
+        book.removeCopy(copy);
+        copiesIndex.remove(copy);
+    }
+
     /**
-     * El estado de una copia debe coincidir con los prestamos: "Prestado" solo si
-     * tiene un prestamo activo. (En los datos originales las copias 1 y 5 estaban
-     * "Prestado" sin ningun prestamo activo.)
+     * "Prestado" solo si la copia tiene un préstamo activo.
      */
     private void reconcileCopyStatus() {
-        for (Book book : books) {
-            for (Copy copy : book.getCopies()) {
-                copy.setStatus("Disponible");
-            }
+        for (Copy copy : copiesIndex.inOrder()) {
+            copy.setStatus("Disponible");
         }
-        for (Loan loan : loans) {
+        for (Loan loan : loans.inOrder()) {
             if ("Activo".equals(loan.getStatus())) {
                 loan.getCopy().setStatus("Prestado");
             }
@@ -95,23 +107,21 @@ public class LibraryManager extends Subject {
         saveAllData();
     }
 
-    public void saveAllData() {
+    public synchronized void saveAllData() {
         try {
-            dataManager.saveUsers(users);
-            dataManager.saveBooks(books);
+            dataManager.saveUsers(users.inOrder());
+            dataManager.saveBooks(books.inOrder());
 
             List<CopyData> copiesData = new ArrayList<>();
-            for (Book book : books) {
+            for (Book book : books.inOrder()) {
                 for (Copy copy : book.getCopies()) {
-                    copiesData.add(new CopyData(copy.getCopyId(),
-                            book.getCode(),
-                            copy.getStatus()));
+                    copiesData.add(new CopyData(copy.getCopyId(), book.getCode(), copy.getStatus()));
                 }
             }
             dataManager.saveCopies(copiesData);
 
             List<LoanData> loansData = new ArrayList<>();
-            for (Loan loan : loans) {
+            for (Loan loan : loans.inOrder()) {
                 loansData.add(new LoanData(loan.getLoanId(),
                         loan.getUser().getUserId(),
                         loan.getCopy().getCopyId(),
@@ -134,7 +144,7 @@ public class LibraryManager extends Subject {
     // USUARIOS
     // ==========================================
 
-    public User addUser(String userId, String name, String type) {
+    public synchronized User addUser(String userId, String name, String type) {
         if (isBlank(userId) || isBlank(name)) {
             throw new IllegalArgumentException("El ID y el nombre del usuario son obligatorios");
         }
@@ -148,7 +158,7 @@ public class LibraryManager extends Subject {
         return user;
     }
 
-    public void editUser(String userId, String name, String type) {
+    public synchronized void editUser(String userId, String name, String type) {
         User user = findUserById(userId);
         if (user == null) {
             throw new IllegalArgumentException("Usuario no encontrado");
@@ -162,7 +172,7 @@ public class LibraryManager extends Subject {
         notifyObservers();
     }
 
-    public void removeUser(String userId) {
+    public synchronized void removeUser(String userId) {
         User user = findUserById(userId);
         if (user == null) {
             throw new IllegalArgumentException("Usuario no encontrado");
@@ -170,8 +180,12 @@ public class LibraryManager extends Subject {
         if (!getActiveLoansByUser(userId).isEmpty()) {
             throw new IllegalStateException("No se puede eliminar: el usuario tiene préstamos activos");
         }
-        // Evita prestamos "huerfanos" (se perderian al recargar los JSON)
-        loans.removeIf(loan -> loan.getUser().getUserId().equals(userId));
+        // Evita préstamos "huérfanos" (se perderían al recargar los JSON)
+        for (Loan loan : loans.inOrder()) {
+            if (loan.getUser().getUserId().equals(userId)) {
+                loans.remove(loan);
+            }
+        }
         users.remove(user);
         saveAllData();
         notifyObservers();
@@ -181,7 +195,7 @@ public class LibraryManager extends Subject {
     // LIBROS
     // ==========================================
 
-    public Book addBook(int code, String title, String author, String genre, int year, int numCopies) {
+    public synchronized Book addBook(int code, String title, String author, String genre, int year, int numCopies) {
         if (isBlank(title)) {
             throw new IllegalArgumentException("El título del libro es obligatorio");
         }
@@ -193,7 +207,7 @@ public class LibraryManager extends Subject {
         }
         Book book = new Book(code, title, author, genre, year);
         for (int i = 0; i < numCopies; i++) {
-            book.addCopy(new Copy(nextCopyId++, "Disponible", book));
+            attachCopy(book, new Copy(nextCopyId++, "Disponible", book));
         }
         books.add(book);
         saveAllData();
@@ -201,7 +215,8 @@ public class LibraryManager extends Subject {
         return book;
     }
 
-    public void editBook(int code, String title, String author, String genre, int year, int newCopiesCount) {
+    public synchronized void editBook(int code, String title, String author, String genre, int year,
+            int newCopiesCount) {
         Book book = findBookByCode(code);
         if (book == null) {
             throw new IllegalArgumentException("Libro no encontrado");
@@ -218,20 +233,21 @@ public class LibraryManager extends Subject {
             int toRemove = currentCopies - newCopiesCount;
             if (book.getAvailableCopies() < toRemove) {
                 throw new IllegalStateException("No se pueden quitar " + toRemove
-                        + " copias: solo hay " + book.getAvailableCopies() + " disponibles (el resto está prestado)");
+                        + " copias: solo hay " + book.getAvailableCopies()
+                        + " disponibles (el resto está prestado)");
             }
+            // getCopies() es un snapshot ordenado por copyId: se quitan las más recientes
             List<Copy> copies = book.getCopies();
             for (int i = copies.size() - 1; i >= 0 && toRemove > 0; i--) {
                 Copy copy = copies.get(i);
                 if ("Disponible".equals(copy.getStatus())) {
-                    removeLoansOfCopy(copy);
-                    copies.remove(i);
+                    detachCopy(book, copy);
                     toRemove--;
                 }
             }
         } else if (newCopiesCount > currentCopies) {
             for (int i = 0; i < newCopiesCount - currentCopies; i++) {
-                book.addCopy(new Copy(nextCopyId++, "Disponible", book));
+                attachCopy(book, new Copy(nextCopyId++, "Disponible", book));
             }
         }
 
@@ -243,18 +259,19 @@ public class LibraryManager extends Subject {
         notifyObservers();
     }
 
-    public void removeBook(int code) {
+    public synchronized void removeBook(int code) {
         Book book = findBookByCode(code);
         if (book == null) {
             throw new IllegalArgumentException("Libro no encontrado");
         }
-        for (Copy copy : book.getCopies()) {
+        List<Copy> copies = book.getCopies();
+        for (Copy copy : copies) {
             if (!"Disponible".equals(copy.getStatus())) {
                 throw new IllegalStateException("No se puede eliminar: el libro tiene copias prestadas");
             }
         }
-        for (Copy copy : book.getCopies()) {
-            removeLoansOfCopy(copy);
+        for (Copy copy : copies) {
+            detachCopy(book, copy);
         }
         books.remove(book);
         saveAllData();
@@ -262,14 +279,18 @@ public class LibraryManager extends Subject {
     }
 
     private void removeLoansOfCopy(Copy copy) {
-        loans.removeIf(loan -> loan.getCopy() == copy);
+        for (Loan loan : loans.inOrder()) {
+            if (loan.getCopy() == copy) {
+                loans.remove(loan);
+            }
+        }
     }
 
     // ==========================================
     // PRESTAMOS
     // ==========================================
 
-    public Loan registerLoan(String userId, int copyId, LocalDate returnDate) {
+    public synchronized Loan registerLoan(String userId, int copyId, LocalDate returnDate) {
         User user = findUserById(userId);
         if (user == null) {
             throw new IllegalArgumentException("Usuario no encontrado");
@@ -293,7 +314,7 @@ public class LibraryManager extends Subject {
         return loan;
     }
 
-    public void registerReturn(int loanId) {
+    public synchronized void registerReturn(int loanId) {
         Loan loan = findLoanById(loanId);
         if (loan == null) {
             throw new IllegalArgumentException("Préstamo no encontrado");
@@ -308,56 +329,38 @@ public class LibraryManager extends Subject {
     }
 
     // ==========================================
-    // BUSQUEDAS
+    // BUSQUEDAS (por clave: O(log n) en promedio)
     // ==========================================
 
-    public User findUserById(String userId) {
-        for (User aux : users) {
-            if (aux.getUserId().equals(userId)) {
-                return aux;
-            }
+    public synchronized User findUserById(String userId) {
+        if (userId == null) {
+            return null;
         }
-        return null;
+        return users.find(new User(userId, null, null));
     }
 
-    public Book findBookByCode(int code) {
-        for (Book aux : books) {
-            if (aux.getCode() == code) {
-                return aux;
-            }
-        }
-        return null;
+    public synchronized Book findBookByCode(int code) {
+        return books.find(new Book(code, null, null, null, 0));
     }
 
     private Copy findCopyById(int copyId) {
-        for (Book book : books) {
-            for (Copy aux : book.getCopies()) {
-                if (aux.getCopyId() == copyId) {
-                    return aux;
-                }
-            }
-        }
-        return null;
+        return copiesIndex.find(new Copy(copyId, null, null));
     }
 
     private Loan findLoanById(int loanId) {
-        for (Loan aux : loans) {
-            if (aux.getLoanId() == loanId) {
-                return aux;
-            }
-        }
-        return null;
+        return loans.find(new Loan(loanId, null, null, null, null));
     }
 
     /**
      * criterion: "Titulo", "Autor", "Genero" o "Codigo". Se compara solo la
-     * primera letra para no depender de tildes/codificacion. Texto vacio = todos.
+     * primera letra para no depender de tildes/codificación. Texto vacío = todos.
+     * (Búsqueda parcial: recorre el árbol en orden, resultados ordenados por código.)
      */
-    public List<Book> searchBooks(String criterion, String text) {
+    public synchronized List<Book> searchBooks(String criterion, String text) {
         String t = text == null ? "" : text.trim().toLowerCase();
         char c = (criterion == null || criterion.isEmpty()) ? 't' : Character.toLowerCase(criterion.charAt(0));
         List<Book> results = new ArrayList<>();
-        for (Book book : books) {
+        for (Book book : books.inOrder()) {
             boolean match;
             if (t.isEmpty()) {
                 match = true;
@@ -377,9 +380,9 @@ public class LibraryManager extends Subject {
         return results;
     }
 
-    public List<Loan> getLoansByUser(String userId) {
+    public synchronized List<Loan> getLoansByUser(String userId) {
         List<Loan> results = new ArrayList<>();
-        for (Loan loan : loans) {
+        for (Loan loan : loans.inOrder()) {
             if (loan.getUser().getUserId().equals(userId)) {
                 results.add(loan);
             }
@@ -387,9 +390,9 @@ public class LibraryManager extends Subject {
         return results;
     }
 
-    public List<Loan> getActiveLoansByUser(String userId) {
+    public synchronized List<Loan> getActiveLoansByUser(String userId) {
         List<Loan> results = new ArrayList<>();
-        for (Loan loan : loans) {
+        for (Loan loan : loans.inOrder()) {
             if (loan.getUser().getUserId().equals(userId) && "Activo".equals(loan.getStatus())) {
                 results.add(loan);
             }
@@ -401,9 +404,9 @@ public class LibraryManager extends Subject {
     // ESTADISTICAS
     // ==========================================
 
-    public int getActiveLoansCount() {
+    public synchronized int getActiveLoansCount() {
         int count = 0;
-        for (Loan loan : loans) {
+        for (Loan loan : loans.inOrder()) {
             if ("Activo".equals(loan.getStatus())) {
                 count++;
             }
@@ -411,52 +414,50 @@ public class LibraryManager extends Subject {
         return count;
     }
 
-    public int getOverdueLoansCount() {
+    public synchronized int getOverdueLoansCount() {
         LocalDate today = LocalDate.now();
         int count = 0;
-        for (Loan loan : loans) {
-            if ("Activo".equals(loan.getStatus()) &&
-                    loan.getReturnDate() != null &&
-                    loan.getReturnDate().isBefore(today)) {
+        for (Loan loan : loans.inOrder()) {
+            if ("Activo".equals(loan.getStatus())
+                    && loan.getReturnDate() != null
+                    && loan.getReturnDate().isBefore(today)) {
                 count++;
             }
         }
         return count;
     }
 
-    public int getTotalCopies() {
+    public synchronized int getTotalCopies() {
+        return copiesIndex.size();
+    }
+
+    public synchronized int getAvailableCopies() {
         int count = 0;
-        for (Book book : books) {
-            count += book.getTotalCopies();
+        for (Copy copy : copiesIndex.inOrder()) {
+            if ("Disponible".equals(copy.getStatus())) {
+                count++;
+            }
         }
         return count;
     }
 
-    public int getAvailableCopies() {
-        int count = 0;
-        for (Book book : books) {
-            count += book.getAvailableCopies();
-        }
-        return count;
-    }
-
-    public int getTotalUsers() {
+    public synchronized int getTotalUsers() {
         return users.size();
     }
 
-    public int getTotalBooks() {
+    public synchronized int getTotalBooks() {
         return books.size();
     }
 
-    public List<User> getAllUsers() {
-        return new ArrayList<>(users);
+    public synchronized List<User> getAllUsers() {
+        return users.inOrder();
     }
 
-    public List<Book> getAllBooks() {
-        return new ArrayList<>(books);
+    public synchronized List<Book> getAllBooks() {
+        return books.inOrder();
     }
 
-    public List<Loan> getAllLoans() {
-        return new ArrayList<>(loans);
+    public synchronized List<Loan> getAllLoans() {
+        return loans.inOrder();
     }
 }

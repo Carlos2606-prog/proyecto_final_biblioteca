@@ -540,7 +540,127 @@
     "status": "Disponible"
   },
   {
-    "copyId": 114,
+    "copyId": 131,
+    "bookCode": 21,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 132,
+    "bookCode": 21,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 133,
+    "bookCode": 21,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 134,
+    "bookCode": 21,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 135,
+    "bookCode": 21,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 136,
+    "bookCode": 21,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 137,
+    "bookCode": 21,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 138,
+    "bookCode": 21,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 139,
+    "bookCode": 21,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 140,
+    "bookCode": 21,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 141,
+    "bookCode": 21,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 142,
+    "bookCode": 21,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 143,
+    "bookCode": 21,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 144,
+    "bookCode": 21,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 145,
+    "bookCode": 21,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 146,
+    "bookCode": 21,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 147,
+    "bookCode": 21,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 148,
+    "bookCode": 21,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 149,
+    "bookCode": 21,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 150,
+    "bookCode": 21,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 151,
+    "bookCode": 21,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 152,
+    "bookCode": 21,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 153,
+    "bookCode": 21,
+    "status": "Disponible"
+  },
+  {
+    "copyId": 154,
+    "bookCode": 21,
+    "status": "Prestado"
+  },
+  {
+    "copyId": 155,
     "bookCode": 21,
     "status": "Disponible"
   },

@@ -38,5 +38,13 @@
     "loanDate": "2026-11-17",
     "returnDate": "2026-11-26",
     "status": "Activo"
+  },
+  {
+    "loanId": 7,
+    "userId": "U001",
+    "copyId": 154,
+    "loanDate": "2026-11-18",
+    "returnDate": "2026-11-23",
+    "status": "Activo"
   }
 ]
