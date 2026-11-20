@@ -32,7 +32,7 @@
   {
     "copyId": 7,
     "bookCode": 3,
-    "status": "Disponible"
+    "status": "Prestado"
   },
   {
     "copyId": 8,
@@ -537,56 +537,6 @@
   {
     "copyId": 113,
     "bookCode": 20,
-    "status": "Disponible"
-  },
-  {
-    "copyId": 114,
-    "bookCode": 21,
-    "status": "Disponible"
-  },
-  {
-    "copyId": 115,
-    "bookCode": 21,
-    "status": "Disponible"
-  },
-  {
-    "copyId": 116,
-    "bookCode": 21,
-    "status": "Disponible"
-  },
-  {
-    "copyId": 117,
-    "bookCode": 21,
-    "status": "Disponible"
-  },
-  {
-    "copyId": 118,
-    "bookCode": 21,
-    "status": "Disponible"
-  },
-  {
-    "copyId": 119,
-    "bookCode": 21,
-    "status": "Disponible"
-  },
-  {
-    "copyId": 120,
-    "bookCode": 21,
-    "status": "Disponible"
-  },
-  {
-    "copyId": 121,
-    "bookCode": 21,
-    "status": "Disponible"
-  },
-  {
-    "copyId": 122,
-    "bookCode": 21,
-    "status": "Disponible"
-  },
-  {
-    "copyId": 123,
-    "bookCode": 21,
     "status": "Disponible"
   }
 ]

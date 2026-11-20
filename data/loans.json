@@ -56,19 +56,19 @@
     "status": "Activo"
   },
   {
-    "loanId": 11,
-    "userId": "U003",
-    "copyId": 114,
-    "loanDate": "2026-11-20",
-    "returnDate": "2026-11-27",
-    "status": "Devuelto"
-  },
-  {
     "loanId": 12,
     "userId": "U007",
     "copyId": 101,
     "loanDate": "2026-11-20",
     "returnDate": "2026-11-27",
+    "status": "Activo"
+  },
+  {
+    "loanId": 13,
+    "userId": "U009",
+    "copyId": 7,
+    "loanDate": "2026-11-20",
+    "returnDate": "2026-11-25",
     "status": "Activo"
   }
 ]

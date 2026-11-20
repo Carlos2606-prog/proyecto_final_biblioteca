@@ -38,5 +38,10 @@
     "userId": "U008",
     "name": "Felipe Bernate",
     "type": "Externo"
+  },
+  {
+    "userId": "U009",
+    "name": "Camila Soto",
+    "type": "Estudiante"
   }
 ]

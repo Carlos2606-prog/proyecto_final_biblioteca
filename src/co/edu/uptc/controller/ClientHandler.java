@@ -11,7 +11,6 @@ import co.edu.uptc.model.User;
 import co.edu.uptc.pojo.Observer;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -90,7 +89,6 @@ public class ClientHandler implements Runnable, Observer {
         }
     }
 
-
     private String readMessage() throws IOException {
         int length = in.readInt();
         byte[] data = new byte[length];
@@ -107,9 +105,8 @@ public class ClientHandler implements Runnable, Observer {
         }
     }
 
-
     private String processRequest(String request) {
-  
+
         String[] p = request.split(";", -1);
         try {
             synchronized (libraryManager) {
@@ -212,12 +209,12 @@ public class ClientHandler implements Runnable, Observer {
 
             case "ADD_USER":
                 need(p, 4);
-                libraryManager.addUser(p[1].trim(), p[2].trim(), p[3].trim());
+                libraryManager.addUser(new User(p[1].trim(), p[2].trim(), p[3].trim()));
                 return "SUCCESS;Usuario agregado correctamente";
 
             case "EDIT_USER":
                 need(p, 4);
-                libraryManager.editUser(p[1].trim(), p[2].trim(), p[3].trim());
+                libraryManager.editUser(new User(p[1].trim(), p[2].trim(), p[3].trim()));
                 return "SUCCESS;Usuario actualizado correctamente";
 
             case "DELETE_USER":
@@ -227,14 +224,12 @@ public class ClientHandler implements Runnable, Observer {
 
             case "ADD_BOOK":
                 need(p, 7);
-                libraryManager.addBook(Integer.parseInt(p[1].trim()), p[2].trim(), p[3].trim(), p[4].trim(),
-                        Integer.parseInt(p[5].trim()), Integer.parseInt(p[6].trim()));
+                libraryManager.addBook(parseBook(p), Integer.parseInt(p[6].trim()));
                 return "SUCCESS;Libro agregado correctamente";
 
             case "EDIT_BOOK":
                 need(p, 7);
-                libraryManager.editBook(Integer.parseInt(p[1].trim()), p[2].trim(), p[3].trim(), p[4].trim(),
-                        Integer.parseInt(p[5].trim()), Integer.parseInt(p[6].trim()));
+                libraryManager.editBook(parseBook(p), Integer.parseInt(p[6].trim()));
                 return "SUCCESS;Libro actualizado correctamente";
 
             case "DELETE_BOOK":
@@ -262,7 +257,6 @@ public class ClientHandler implements Runnable, Observer {
                 libraryManager.registerReturn(Integer.parseInt(p[1].trim()));
                 return "SUCCESS;Devolución registrada correctamente";
 
-
             default:
                 return "ERROR;Comando no reconocido";
         }
@@ -274,6 +268,11 @@ public class ClientHandler implements Runnable, Observer {
             throw new IllegalStateException("Esta operación requiere un usuario con sesión iniciada");
         }
         return user;
+    }
+
+    private Book parseBook(String[] p) {
+        return new Book(Integer.parseInt(p[1].trim()), p[2].trim(), p[3].trim(), p[4].trim(),
+                Integer.parseInt(p[5].trim()));
     }
 
     private String booksToJson(List<Book> books) {

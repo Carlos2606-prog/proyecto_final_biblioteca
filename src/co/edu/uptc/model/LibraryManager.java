@@ -34,121 +34,28 @@ public class LibraryManager extends Subject {
         }
     }
 
-    private void loadAllData() throws IOException {
-        for (User user : dataManager.loadUsers()) {
-            users.add(user);
-        }
-        for (Book book : dataManager.loadBooks()) {
-            books.add(book);
-        }
-
-        for (CopyData copyData : dataManager.loadCopies()) {
-            Book book = findBookByCode(copyData.getBookCode());
-            if (book != null) {
-                attachCopy(book, new Copy(copyData.getCopyId(), copyData.getStatus(), book));
-                if (copyData.getCopyId() >= nextCopyId) {
-                    nextCopyId = copyData.getCopyId() + 1;
-                }
-            }
-        }
-
-        for (LoanData loanData : dataManager.loadLoans()) {
-            User user = findUserById(loanData.getUserId());
-            Copy copy = findCopyById(loanData.getCopyId());
-
-            if (user != null && copy != null) {
-                Loan loan = new Loan(loanData.getLoanId(), user, copy,
-                        loanData.getLoanDate(), loanData.getReturnDate());
-                loan.setStatus(loanData.getStatus());
-                loans.add(loan);
-
-                if (loanData.getLoanId() >= nextLoanId) {
-                    nextLoanId = loanData.getLoanId() + 1;
-                }
-            }
-        }
-
-        reconcileCopyStatus();
-    }
-
-    private void attachCopy(Book book, Copy copy) {
-        book.addCopy(copy);
-        copiesIndex.add(copy);
-    }
-
-    private void detachCopy(Book book, Copy copy) {
-        removeLoansOfCopy(copy);
-        book.removeCopy(copy);
-        copiesIndex.remove(copy);
-    }
-
-    private void reconcileCopyStatus() {
-        for (Copy copy : copiesIndex.inOrder()) {
-            copy.setStatus("Disponible");
-        }
-        for (Loan loan : loans.inOrder()) {
-            if ("Activo".equals(loan.getStatus())) {
-                loan.getCopy().setStatus("Prestado");
-            }
-        }
-        saveAllData();
-    }
-
-    public synchronized void saveAllData() {
-        try {
-            dataManager.saveUsers(users.inOrder());
-            dataManager.saveBooks(books.inOrder());
-
-            List<CopyData> copiesData = new ArrayList<>();
-            for (Book book : books.inOrder()) {
-                for (Copy copy : book.getCopies()) {
-                    copiesData.add(new CopyData(copy.getCopyId(), book.getCode(), copy.getStatus()));
-                }
-            }
-            dataManager.saveCopies(copiesData);
-
-            List<LoanData> loansData = new ArrayList<>();
-            for (Loan loan : loans.inOrder()) {
-                loansData.add(new LoanData(loan.getLoanId(),
-                        loan.getUser().getUserId(),
-                        loan.getCopy().getCopyId(),
-                        loan.getLoanDate(),
-                        loan.getReturnDate(),
-                        loan.getStatus()));
-            }
-            dataManager.saveLoans(loansData);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private boolean isBlank(String s) {
-        return s == null || s.trim().isEmpty();
-    }
-
-    public synchronized void addUser(String userId, String name, String type) {
-        if (isBlank(userId) || isBlank(name)) {
+    public synchronized void addUser(User user) {
+        if (isBlank(user.getUserId()) || isBlank(user.getName())) {
             throw new IllegalArgumentException("El ID y el nombre del usuario son obligatorios");
         }
-        if (findUserById(userId) != null) {
-            throw new IllegalArgumentException("Ya existe un usuario con el ID " + userId);
+        if (findUserById(user.getUserId()) != null) {
+            throw new IllegalArgumentException("Ya existe un usuario con el ID " + user.getUserId());
         }
-        users.add(new User(userId, name, type));
+        users.add(user);
         saveAllData();
         notifyObservers();
     }
 
-    public synchronized void editUser(String userId, String name, String type) {
-        User user = findUserById(userId);
+    public synchronized void editUser(User updated) {
+        User user = findUserById(updated.getUserId());
         if (user == null) {
             throw new IllegalArgumentException("Usuario no encontrado");
         }
-        if (isBlank(name)) {
+        if (isBlank(updated.getName())) {
             throw new IllegalArgumentException("El nombre del usuario es obligatorio");
         }
-        user.setName(name);
-        user.setType(type);
+        user.setName(updated.getName());
+        user.setType(updated.getType());
         saveAllData();
         notifyObservers();
     }
@@ -171,36 +78,31 @@ public class LibraryManager extends Subject {
         notifyObservers();
     }
 
-    public synchronized void addBook(int code, String title, String author, String genre, int year, int numCopies) {
-        if (isBlank(title)) {
+    public synchronized void addBook(Book book, int numCopies) {
+        if (isBlank(book.getTitle())) {
             throw new IllegalArgumentException("El título del libro es obligatorio");
         }
         if (numCopies < 0) {
             throw new IllegalArgumentException("El número de copias no puede ser negativo");
         }
-        if (findBookByCode(code) != null) {
-            throw new IllegalArgumentException("Ya existe un libro con el código " + code);
+        if (findBookByCode(book.getCode()) != null) {
+            throw new IllegalArgumentException("Ya existe un libro con el código " + book.getCode());
         }
-        Book book = new Book(code, title, author, genre, year);
         for (int i = 0; i < numCopies; i++) {
             attachCopy(book, new Copy(nextCopyId++, "Disponible", book));
         }
         books.add(book);
         saveAllData();
-        books.add(book);
-        saveAllData();
         notifyObservers();
-        notifyMessage("Libro añadido: " + title);
-        notifyObservers();
+        notifyMessage("Libro añadido: " + book.getTitle());
     }
 
-    public synchronized void editBook(int code, String title, String author, String genre, int year,
-            int newCopiesCount) {
-        Book book = findBookByCode(code);
+    public synchronized void editBook(Book updated, int newCopiesCount) {
+        Book book = findBookByCode(updated.getCode());
         if (book == null) {
             throw new IllegalArgumentException("Libro no encontrado");
         }
-        if (isBlank(title)) {
+        if (isBlank(updated.getTitle())) {
             throw new IllegalArgumentException("El título del libro es obligatorio");
         }
         if (newCopiesCount < 0) {
@@ -229,12 +131,16 @@ public class LibraryManager extends Subject {
             }
         }
 
-        book.setTitle(title);
-        book.setAuthor(author);
-        book.setGenre(genre);
-        book.setYear(year);
+        book.setTitle(updated.getTitle());
+        book.setAuthor(updated.getAuthor());
+        book.setGenre(updated.getGenre());
+        book.setYear(updated.getYear());
         saveAllData();
         notifyObservers();
+        if (newCopiesCount != currentCopies) {
+            notifyMessage("Actualización de número de copias: " + book.getTitle() + " "
+                    + currentCopies + " -> " + newCopiesCount);
+        }
     }
 
     public synchronized void removeBook(int code) {
@@ -377,29 +283,6 @@ public class LibraryManager extends Subject {
         return results;
     }
 
-    public synchronized int getActiveLoansCount() {
-        int count = 0;
-        for (Loan loan : loans.inOrder()) {
-            if ("Activo".equals(loan.getStatus())) {
-                count++;
-            }
-        }
-        return count;
-    }
-
-    public synchronized int getOverdueLoansCount() {
-        LocalDate today = LocalDate.now();
-        int count = 0;
-        for (Loan loan : loans.inOrder()) {
-            if ("Activo".equals(loan.getStatus())
-                    && loan.getReturnDate() != null
-                    && loan.getReturnDate().isBefore(today)) {
-                count++;
-            }
-        }
-        return count;
-    }
-
     public synchronized int getTotalCopies() {
         return copiesIndex.size();
     }
@@ -432,5 +315,98 @@ public class LibraryManager extends Subject {
 
     public synchronized List<Loan> getAllLoans() {
         return loans.inOrder();
+    }
+
+    private void loadAllData() throws IOException {
+        for (User user : dataManager.loadUsers()) {
+            users.add(user);
+        }
+        for (Book book : dataManager.loadBooks()) {
+            books.add(book);
+        }
+
+        for (CopyData copyData : dataManager.loadCopies()) {
+            Book book = findBookByCode(copyData.getBookCode());
+            if (book != null) {
+                attachCopy(book, new Copy(copyData.getCopyId(), copyData.getStatus(), book));
+                if (copyData.getCopyId() >= nextCopyId) {
+                    nextCopyId = copyData.getCopyId() + 1;
+                }
+            }
+        }
+
+        for (LoanData loanData : dataManager.loadLoans()) {
+            User user = findUserById(loanData.getUserId());
+            Copy copy = findCopyById(loanData.getCopyId());
+
+            if (user != null && copy != null) {
+                Loan loan = new Loan(loanData.getLoanId(), user, copy,
+                        loanData.getLoanDate(), loanData.getReturnDate());
+                loan.setStatus(loanData.getStatus());
+                loans.add(loan);
+
+                if (loanData.getLoanId() >= nextLoanId) {
+                    nextLoanId = loanData.getLoanId() + 1;
+                }
+            }
+        }
+
+        reconcileCopyStatus();
+    }
+
+    private void attachCopy(Book book, Copy copy) {
+        book.addCopy(copy);
+        copiesIndex.add(copy);
+    }
+
+    private void detachCopy(Book book, Copy copy) {
+        removeLoansOfCopy(copy);
+        book.removeCopy(copy);
+        copiesIndex.remove(copy);
+    }
+
+    private void reconcileCopyStatus() {
+        for (Copy copy : copiesIndex.inOrder()) {
+            copy.setStatus("Disponible");
+        }
+        for (Loan loan : loans.inOrder()) {
+            if ("Activo".equals(loan.getStatus())) {
+                loan.getCopy().setStatus("Prestado");
+            }
+        }
+        saveAllData();
+    }
+
+    public synchronized void saveAllData() {
+        try {
+            dataManager.saveUsers(users.inOrder());
+            dataManager.saveBooks(books.inOrder());
+
+            List<CopyData> copiesData = new ArrayList<>();
+            for (Book book : books.inOrder()) {
+                for (Copy copy : book.getCopies()) {
+                    copiesData.add(new CopyData(copy.getCopyId(), book.getCode(), copy.getStatus()));
+                }
+            }
+            dataManager.saveCopies(copiesData);
+
+            List<LoanData> loansData = new ArrayList<>();
+            for (Loan loan : loans.inOrder()) {
+                loansData.add(new LoanData(loan.getLoanId(),
+                        loan.getUser().getUserId(),
+                        loan.getCopy().getCopyId(),
+                        loan.getLoanDate(),
+                        loan.getReturnDate(),
+                        loan.getStatus()));
+            }
+            dataManager.saveLoans(loansData);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private boolean isBlank(String s) {
+        return s == null || s.trim().isEmpty();
     }
 }
