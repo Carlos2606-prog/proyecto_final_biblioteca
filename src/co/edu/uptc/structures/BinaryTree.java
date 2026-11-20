@@ -51,7 +51,7 @@ public class BinaryTree<T> {
         }
     }
 
-    /** Elimina el valor con esa clave. Devuelve false si no existía. */
+   
     public boolean remove(T value) {
         if (value == null || !contains(value)) {
             return false;
@@ -71,14 +71,14 @@ public class BinaryTree<T> {
         } else if (cmp > 0) {
             node.setRight(remove(node.getRight(), value));
         } else {
-            // Caso 1 y 2: sin hijo izquierdo o sin hijo derecho
+           
             if (node.getLeft() == null) {
                 return node.getRight();
             }
             if (node.getRight() == null) {
                 return node.getLeft();
             }
-            // Caso 3: dos hijos -> se reemplaza por el menor del subárbol derecho
+            
             DoubleNode<T> min = node.getRight();
             while (min.getLeft() != null) {
                 min = min.getLeft();
@@ -97,7 +97,7 @@ public class BinaryTree<T> {
         return node;
     }
 
-    /** Devuelve el valor almacenado con esa clave, o null si no existe. */
+    
     public T find(T value) {
         if (value == null) {
             return null;
@@ -130,7 +130,7 @@ public class BinaryTree<T> {
         size = 0;
     }
 
-    /** Copia de los elementos ordenados por la clave. Es una lista nueva (snapshot). */
+    
     public List<T> inOrder() {
         List<T> result = new ArrayList<>(size);
         Deque<DoubleNode<T>> stack = new ArrayDeque<>();

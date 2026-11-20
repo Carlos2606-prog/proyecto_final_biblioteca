@@ -20,16 +20,6 @@
     "type": "Estudiante"
   },
   {
-    "userId": "U005",
-    "name": "Ana Torres",
-    "type": "Estudiante"
-  },
-  {
-    "userId": "U006",
-    "name": "Tomas Espinel",
-    "type": "Estudiante"
-  },
-  {
     "userId": "U008",
     "name": "Felipe Bernate",
     "type": "Externo"

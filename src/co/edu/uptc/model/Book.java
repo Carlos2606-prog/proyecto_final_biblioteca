@@ -20,7 +20,6 @@ public class Book {
         this.year = year;
     }
 
-    // Gson no llama al constructor, por eso el árbol se crea de forma perezosa
     private BinaryTree<Copy> tree() {
         if (copies == null) {
             copies = new BinaryTree<>(Comparator.comparingInt(Copy::getCopyId));
@@ -43,7 +42,7 @@ public class Book {
     public int getYear() { return year; }
     public void setYear(int year) { this.year = year; }
 
-    /** Copia ordenada por copyId (snapshot): modificarla no altera el libro. */
+     
     public List<Copy> getCopies() {
         return tree().inOrder();
     }

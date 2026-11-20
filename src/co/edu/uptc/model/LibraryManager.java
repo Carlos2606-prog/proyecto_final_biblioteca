@@ -12,18 +12,11 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-/**
- * Lógica de la biblioteca sobre árboles binarios de búsqueda.
- * Los árboles no son thread-safe, por eso todos los métodos públicos son
- * synchronized (mismo monitor que usa ClientHandler). Las listas solo se usan
- * para persistencia y para entregar resultados (snapshots).
- */
 public class LibraryManager extends Subject {
 
     private final BinaryTree<User> users = new BinaryTree<>(Comparator.comparing(User::getUserId));
     private final BinaryTree<Book> books = new BinaryTree<>(Comparator.comparingInt(Book::getCode));
     private final BinaryTree<Loan> loans = new BinaryTree<>(Comparator.comparingInt(Loan::getLoanId));
-    /** Índice global de todas las copias por copyId (evita recorrer libro por libro). */
     private final BinaryTree<Copy> copiesIndex = new BinaryTree<>(Comparator.comparingInt(Copy::getCopyId));
 
     private int nextLoanId;
@@ -79,22 +72,17 @@ public class LibraryManager extends Subject {
         reconcileCopyStatus();
     }
 
-    /** Agrega la copia al libro Y al índice global (siempre juntos). */
     private void attachCopy(Book book, Copy copy) {
         book.addCopy(copy);
         copiesIndex.add(copy);
     }
 
-    /** Quita la copia del libro Y del índice global, junto con sus préstamos. */
     private void detachCopy(Book book, Copy copy) {
         removeLoansOfCopy(copy);
         book.removeCopy(copy);
         copiesIndex.remove(copy);
     }
 
-    /**
-     * "Prestado" solo si la copia tiene un préstamo activo.
-     */
     private void reconcileCopyStatus() {
         for (Copy copy : copiesIndex.inOrder()) {
             copy.setStatus("Disponible");
@@ -140,10 +128,6 @@ public class LibraryManager extends Subject {
         return s == null || s.trim().isEmpty();
     }
 
-    // ==========================================
-    // USUARIOS
-    // ==========================================
-
     public synchronized User addUser(String userId, String name, String type) {
         if (isBlank(userId) || isBlank(name)) {
             throw new IllegalArgumentException("El ID y el nombre del usuario son obligatorios");
@@ -180,7 +164,6 @@ public class LibraryManager extends Subject {
         if (!getActiveLoansByUser(userId).isEmpty()) {
             throw new IllegalStateException("No se puede eliminar: el usuario tiene préstamos activos");
         }
-        // Evita préstamos "huérfanos" (se perderían al recargar los JSON)
         for (Loan loan : loans.inOrder()) {
             if (loan.getUser().getUserId().equals(userId)) {
                 loans.remove(loan);
@@ -190,10 +173,6 @@ public class LibraryManager extends Subject {
         saveAllData();
         notifyObservers();
     }
-
-    // ==========================================
-    // LIBROS
-    // ==========================================
 
     public synchronized Book addBook(int code, String title, String author, String genre, int year, int numCopies) {
         if (isBlank(title)) {
@@ -236,7 +215,6 @@ public class LibraryManager extends Subject {
                         + " copias: solo hay " + book.getAvailableCopies()
                         + " disponibles (el resto está prestado)");
             }
-            // getCopies() es un snapshot ordenado por copyId: se quitan las más recientes
             List<Copy> copies = book.getCopies();
             for (int i = copies.size() - 1; i >= 0 && toRemove > 0; i--) {
                 Copy copy = copies.get(i);
@@ -278,6 +256,7 @@ public class LibraryManager extends Subject {
         notifyObservers();
     }
 
+    //////////////////////////
     private void removeLoansOfCopy(Copy copy) {
         for (Loan loan : loans.inOrder()) {
             if (loan.getCopy() == copy) {
@@ -285,10 +264,8 @@ public class LibraryManager extends Subject {
             }
         }
     }
-
-    // ==========================================
-    // PRESTAMOS
-    // ==========================================
+    ///////////////////////////
+   
 
     public synchronized Loan registerLoan(String userId, int copyId, LocalDate returnDate) {
         User user = findUserById(userId);
@@ -328,9 +305,6 @@ public class LibraryManager extends Subject {
         notifyObservers();
     }
 
-    // ==========================================
-    // BUSQUEDAS (por clave: O(log n) en promedio)
-    // ==========================================
 
     public synchronized User findUserById(String userId) {
         if (userId == null) {
@@ -351,11 +325,7 @@ public class LibraryManager extends Subject {
         return loans.find(new Loan(loanId, null, null, null, null));
     }
 
-    /**
-     * criterion: "Titulo", "Autor", "Genero" o "Codigo". Se compara solo la
-     * primera letra para no depender de tildes/codificación. Texto vacío = todos.
-     * (Búsqueda parcial: recorre el árbol en orden, resultados ordenados por código.)
-     */
+
     public synchronized List<Book> searchBooks(String criterion, String text) {
         String t = text == null ? "" : text.trim().toLowerCase();
         char c = (criterion == null || criterion.isEmpty()) ? 't' : Character.toLowerCase(criterion.charAt(0));
