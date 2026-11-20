@@ -18,4 +18,10 @@ public class Subject {
             observer.update();
         }
     }
+
+    public void notifyMessage(String message) {
+        for (Observer observer : observers) {
+            observer.onMessage(message);
+        }
+    }
 }

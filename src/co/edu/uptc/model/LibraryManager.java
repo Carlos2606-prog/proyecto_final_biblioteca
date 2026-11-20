@@ -18,10 +18,9 @@ public class LibraryManager extends Subject {
     private final BinaryTree<Book> books = new BinaryTree<>(Comparator.comparingInt(Book::getCode));
     private final BinaryTree<Loan> loans = new BinaryTree<>(Comparator.comparingInt(Loan::getLoanId));
     private final BinaryTree<Copy> copiesIndex = new BinaryTree<>(Comparator.comparingInt(Copy::getCopyId));
-
     private int nextLoanId;
     private int nextCopyId;
-    private final DataManager dataManager;
+    private DataManager dataManager;
 
     public LibraryManager() {
         this.nextLoanId = 1;
@@ -128,18 +127,16 @@ public class LibraryManager extends Subject {
         return s == null || s.trim().isEmpty();
     }
 
-    public synchronized User addUser(String userId, String name, String type) {
+    public synchronized void addUser(String userId, String name, String type) {
         if (isBlank(userId) || isBlank(name)) {
             throw new IllegalArgumentException("El ID y el nombre del usuario son obligatorios");
         }
         if (findUserById(userId) != null) {
             throw new IllegalArgumentException("Ya existe un usuario con el ID " + userId);
         }
-        User user = new User(userId, name, type);
-        users.add(user);
+        users.add(new User(userId, name, type));
         saveAllData();
         notifyObservers();
-        return user;
     }
 
     public synchronized void editUser(String userId, String name, String type) {
@@ -174,7 +171,7 @@ public class LibraryManager extends Subject {
         notifyObservers();
     }
 
-    public synchronized Book addBook(int code, String title, String author, String genre, int year, int numCopies) {
+    public synchronized void addBook(int code, String title, String author, String genre, int year, int numCopies) {
         if (isBlank(title)) {
             throw new IllegalArgumentException("El título del libro es obligatorio");
         }
@@ -190,8 +187,11 @@ public class LibraryManager extends Subject {
         }
         books.add(book);
         saveAllData();
+        books.add(book);
+        saveAllData();
         notifyObservers();
-        return book;
+        notifyMessage("Libro añadido: " + title);
+        notifyObservers();
     }
 
     public synchronized void editBook(int code, String title, String author, String genre, int year,
@@ -256,7 +256,6 @@ public class LibraryManager extends Subject {
         notifyObservers();
     }
 
-    //////////////////////////
     private void removeLoansOfCopy(Copy copy) {
         for (Loan loan : loans.inOrder()) {
             if (loan.getCopy() == copy) {
@@ -264,8 +263,6 @@ public class LibraryManager extends Subject {
             }
         }
     }
-    ///////////////////////////
-   
 
     public synchronized Loan registerLoan(String userId, int copyId, LocalDate returnDate) {
         User user = findUserById(userId);
@@ -283,11 +280,19 @@ public class LibraryManager extends Subject {
             throw new IllegalArgumentException("La fecha de devolución no puede ser anterior a hoy");
         }
 
+        Book book = copy.getBook();
+        int before = book.getAvailableCopies();
+
         Loan loan = new Loan(nextLoanId++, user, copy, LocalDate.now(), returnDate);
+
         copy.setStatus("Prestado");
         loans.add(loan);
         saveAllData();
         notifyObservers();
+
+        notifyMessage("Actualización de número de copias: " + book.getTitle() + " "
+                + before + " -> " + book.getAvailableCopies());
+
         return loan;
     }
 
@@ -299,12 +304,15 @@ public class LibraryManager extends Subject {
         if (!"Activo".equals(loan.getStatus())) {
             throw new IllegalStateException("Este préstamo ya fue devuelto");
         }
+        Book book = loan.getCopy().getBook();
+        int before = book.getAvailableCopies();
         loan.setStatus("Devuelto");
         loan.getCopy().setStatus("Disponible");
         saveAllData();
         notifyObservers();
+        notifyMessage("Actualización de número de copias: " + book.getTitle() + " "
+                + before + " -> " + book.getAvailableCopies());
     }
-
 
     public synchronized User findUserById(String userId) {
         if (userId == null) {
@@ -324,7 +332,6 @@ public class LibraryManager extends Subject {
     private Loan findLoanById(int loanId) {
         return loans.find(new Loan(loanId, null, null, null, null));
     }
-
 
     public synchronized List<Book> searchBooks(String criterion, String text) {
         String t = text == null ? "" : text.trim().toLowerCase();
@@ -369,10 +376,6 @@ public class LibraryManager extends Subject {
         }
         return results;
     }
-
-    // ==========================================
-    // ESTADISTICAS
-    // ==========================================
 
     public synchronized int getActiveLoansCount() {
         int count = 0;

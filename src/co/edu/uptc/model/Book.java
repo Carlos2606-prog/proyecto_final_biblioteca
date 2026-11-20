@@ -20,39 +20,12 @@ public class Book {
         this.year = year;
     }
 
-    private BinaryTree<Copy> tree() {
-        if (copies == null) {
-            copies = new BinaryTree<>(Comparator.comparingInt(Copy::getCopyId));
-        }
-        return copies;
+    public void addCopy(Copy copy) {
+        tree().add(copy);
     }
 
-    public int getCode() { return code; }
-    public void setCode(int code) { this.code = code; }
-
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
-
-    public String getAuthor() { return author; }
-    public void setAuthor(String author) { this.author = author; }
-
-    public String getGenre() { return genre; }
-    public void setGenre(String genre) { this.genre = genre; }
-
-    public int getYear() { return year; }
-    public void setYear(int year) { this.year = year; }
-
-     
-    public List<Copy> getCopies() {
-        return tree().inOrder();
-    }
-
-    public boolean addCopy(Copy copy) {
-        return tree().add(copy);
-    }
-
-    public boolean removeCopy(Copy copy) {
-        return tree().remove(copy);
+    public void removeCopy(Copy copy) {
+        tree().remove(copy);
     }
 
     public int getTotalCopies() {
@@ -68,4 +41,56 @@ public class Book {
         }
         return count;
     }
+
+    private BinaryTree<Copy> tree() {
+        if (copies == null) {
+            copies = new BinaryTree<>(Comparator.comparingInt(Copy::getCopyId));
+        }
+        return copies;
+    }
+
+    public int getCode() {
+        return code;
+    }
+
+    public void setCode(int code) {
+        this.code = code;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public String getGenre() {
+        return genre;
+    }
+
+    public void setGenre(String genre) {
+        this.genre = genre;
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    public void setYear(int year) {
+        this.year = year;
+    }
+
+    public List<Copy> getCopies() {
+        return tree().inOrder();
+    }
+
 }

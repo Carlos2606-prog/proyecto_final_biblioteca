@@ -21,7 +21,7 @@
     "copyId": 10,
     "loanDate": "2025-12-25",
     "returnDate": "2025-12-30",
-    "status": "Activo"
+    "status": "Devuelto"
   },
   {
     "loanId": 5,
@@ -29,23 +29,7 @@
     "copyId": 2,
     "loanDate": "2025-12-25",
     "returnDate": "2025-12-29",
-    "status": "Activo"
-  },
-  {
-    "loanId": 6,
-    "userId": "U001",
-    "copyId": 121,
-    "loanDate": "2026-11-17",
-    "returnDate": "2026-11-26",
-    "status": "Activo"
-  },
-  {
-    "loanId": 7,
-    "userId": "U001",
-    "copyId": 154,
-    "loanDate": "2026-11-18",
-    "returnDate": "2026-11-23",
-    "status": "Activo"
+    "status": "Devuelto"
   },
   {
     "loanId": 8,
@@ -53,6 +37,38 @@
     "copyId": 1,
     "loanDate": "2026-11-19",
     "returnDate": "2026-11-24",
+    "status": "Devuelto"
+  },
+  {
+    "loanId": 9,
+    "userId": "U001",
+    "copyId": 7,
+    "loanDate": "2026-11-20",
+    "returnDate": "2026-11-29",
+    "status": "Devuelto"
+  },
+  {
+    "loanId": 10,
+    "userId": "U004",
+    "copyId": 1,
+    "loanDate": "2026-11-20",
+    "returnDate": "2026-11-24",
+    "status": "Activo"
+  },
+  {
+    "loanId": 11,
+    "userId": "U003",
+    "copyId": 114,
+    "loanDate": "2026-11-20",
+    "returnDate": "2026-11-27",
+    "status": "Devuelto"
+  },
+  {
+    "loanId": 12,
+    "userId": "U007",
+    "copyId": 101,
+    "loanDate": "2026-11-20",
+    "returnDate": "2026-11-27",
     "status": "Activo"
   }
 ]

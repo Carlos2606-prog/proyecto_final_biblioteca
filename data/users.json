@@ -6,8 +6,8 @@
   },
   {
     "userId": "U002",
-    "name": "Maria Garcia",
-    "type": "Profesor"
+    "name": "Camilo Sanchez",
+    "type": "Estudiante"
   },
   {
     "userId": "U003",
@@ -17,6 +17,21 @@
   {
     "userId": "U004",
     "name": "Camilo Gomez",
+    "type": "Estudiante"
+  },
+  {
+    "userId": "U005",
+    "name": "Rafael Duarte",
+    "type": "Estudiante"
+  },
+  {
+    "userId": "U006",
+    "name": "Cristian Sierra",
+    "type": "Estudiante"
+  },
+  {
+    "userId": "U007",
+    "name": "William Huertas",
     "type": "Estudiante"
   },
   {

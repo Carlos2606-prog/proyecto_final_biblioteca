@@ -21,19 +21,12 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 
-/**
- * Atiende a un cliente. Protocolo: cada mensaje se envia como
- * [int longitud][bytes UTF-8]. Las respuestas empiezan por SUCCESS o ERROR;
- * y las notificaciones asincronas por NOTIFICATION;
- */
 public class ClientHandler implements Runnable, Observer {
     private Socket socket;
     private final ExecutorService notifier = Executors.newSingleThreadExecutor();
     private LibraryManager libraryManager;
     private DataInputStream in;
     private DataOutputStream out;
-
-    // Estado de la sesion
     private boolean isAdmin;
     private String sessionUserId;
 
@@ -71,26 +64,32 @@ public class ClientHandler implements Runnable, Observer {
 
     @Override
     public void update() {
+        sendAsync("NOTIFICATION;DATA_CHANGED");
+    }
+
+    @Override
+    public void onMessage(String message) {
+        if (isAdmin || sessionUserId == null) {
+            return;
+        }
+        sendAsync("NOTIFICATION;MESSAGE;" + message);
+    }
+
+    private void sendAsync(String payload) {
         try {
-            // No se escribe en el socket dentro del bloqueo del modelo:
-            // un cliente lento no debe frenar a los demás.
             notifier.submit(() -> {
                 try {
                     if (out != null) {
-                        writeMessage("NOTIFICATION;DATA_CHANGED");
+                        writeMessage(payload);
                     }
                 } catch (IOException e) {
                     System.err.println("Error enviando notificación: " + e.getMessage());
                 }
             });
         } catch (RejectedExecutionException e) {
-            // el cliente ya se desconectó
         }
     }
 
-    // ==========================================
-    // ENTRADA / SALIDA (sin el limite de 64 KB de writeUTF)
-    // ==========================================
 
     private String readMessage() throws IOException {
         int length = in.readInt();
@@ -108,15 +107,11 @@ public class ClientHandler implements Runnable, Observer {
         }
     }
 
-    // ==========================================
-    // PROCESAMIENTO DE SOLICITUDES
-    // ==========================================
 
     private String processRequest(String request) {
-        // -1 para conservar campos vacios (ej. "SEARCH_BOOKS;Titulo;")
+  
         String[] p = request.split(";", -1);
         try {
-            // Un solo hilo a la vez sobre el modelo
             synchronized (libraryManager) {
                 return execute(p[0], p);
             }
@@ -135,7 +130,6 @@ public class ClientHandler implements Runnable, Observer {
     }
 
     private String execute(String command, String[] p) {
-        // ---- Login / logout ----
         switch (command) {
             case "LOGIN_ADMIN":
                 need(p, 3);
@@ -169,7 +163,6 @@ public class ClientHandler implements Runnable, Observer {
             return "ERROR;Debe iniciar sesión";
         }
 
-        // ---- Comandos para admin y usuario ----
         switch (command) {
             case "GET_BOOKS":
                 return "SUCCESS;" + booksToJson(libraryManager.getAllBooks());
@@ -209,7 +202,6 @@ public class ClientHandler implements Runnable, Observer {
                 break;
         }
 
-        // ---- Comandos solo para administrador ----
         if (!isAdmin) {
             return "ERROR;Operación permitida solo para administradores";
         }
@@ -234,7 +226,6 @@ public class ClientHandler implements Runnable, Observer {
                 return "SUCCESS;Usuario eliminado correctamente";
 
             case "ADD_BOOK":
-                // ADD_BOOK;code;title;author;genre;year;numCopies
                 need(p, 7);
                 libraryManager.addBook(Integer.parseInt(p[1].trim()), p[2].trim(), p[3].trim(), p[4].trim(),
                         Integer.parseInt(p[5].trim()), Integer.parseInt(p[6].trim()));
@@ -271,16 +262,6 @@ public class ClientHandler implements Runnable, Observer {
                 libraryManager.registerReturn(Integer.parseInt(p[1].trim()));
                 return "SUCCESS;Devolución registrada correctamente";
 
-            case "GET_STATISTICS": {
-                JsonArray stats = new JsonArray();
-                stats.add(libraryManager.getTotalUsers());
-                stats.add(libraryManager.getTotalBooks());
-                stats.add(libraryManager.getActiveLoansCount());
-                stats.add(libraryManager.getOverdueLoansCount());
-                stats.add(libraryManager.getAvailableCopies());
-                stats.add(libraryManager.getTotalCopies());
-                return "SUCCESS;" + stats.toString();
-            }
 
             default:
                 return "ERROR;Comando no reconocido";
@@ -294,10 +275,6 @@ public class ClientHandler implements Runnable, Observer {
         }
         return user;
     }
-
-    // ==========================================
-    // CONVERSION A JSON (incluye datos calculados que Gson no serializa solo)
-    // ==========================================
 
     private String booksToJson(List<Book> books) {
         JsonArray array = new JsonArray();

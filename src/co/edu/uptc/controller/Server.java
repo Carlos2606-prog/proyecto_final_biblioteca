@@ -25,7 +25,6 @@ public class Server {
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("Nuevo cliente conectado: " + clientSocket.getInetAddress());
 
-                // Cada cliente se maneja en un hilo independiente
                 ClientHandler handler = new ClientHandler(clientSocket, libraryManager);
                 new Thread(handler).start();
             }
